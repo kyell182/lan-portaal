@@ -33,6 +33,26 @@ Alleen admins melden aan; het publiek ziet alles live bijwerken. Handig op een b
 
 ---
 
+## Zo ziet het eruit
+
+### Publieke site
+
+| Startpagina met aftelling | Live bracket |
+|---|---|
+| ![Startpagina](docs/screenshots/startpagina.png) | ![Bracket](docs/screenshots/bracket.png) |
+
+| Klassement van een scorebord |
+|---|
+| ![Klassement](docs/screenshots/klassement.png) |
+
+### Beheer
+
+| Punten toekennen | Criteria beheren |
+|---|---|
+| ![Scorebord beheren](docs/screenshots/beheer-scorebord.png) | ![Criteria beheren](docs/screenshots/beheer-criteria.png) |
+
+---
+
 ## Snel starten (Docker)
 
 ```bash
@@ -187,31 +207,8 @@ flowchart LR
 
 ## Structuur
 
-```
-src/
-  core/            gedeelde bouwstenen (opslag, validatie, generieke CRUD, live-events)
-  features/        één map per domein
-    auth/ admins/ events/ games/ players/ teams/ prizes/ seats/ templates/
-    plugins/
-      Plugin.js               abstracte basis voor integraties
-      PluginRegistry.js       alle plugins geregistreerd
-      NotificationHub.js      stuurt domeinmeldingen door naar ingeschakelde plugins
-      discord/ webhook/
-    tournaments/
-      formats/
-        TournamentFormat.js     abstracte basisklasse
-        FormatRegistry.js       alle vormen geregistreerd
-        elimination/ league/ points/ scoreboard/ shared/
-  app/             Container (dependency injection), App en ApiRouter
-public/
-  css/             fonts, base, layout, tournament, event (gamer-stijl: VIVES-rood vs cyaan)
-  fonts/           Chakra Petch + Barlow (lokaal, OFL-licentie)
-  js/core/         DOM-helper, API, router, live, formulieren
-  js/views/        bracket, klassement, zitplan, prijzen (gedeeld publiek/admin)
-  js/public/       publieke pagina's
-  js/admin/        beheerpagina's (+ resources/ met configuratie per entiteit)
-tests/             tests voor de toernooi-engine
-```
+Het project is opgedeeld per domein (feature), niet per technisch type: alles wat bij toernooien hoort,
+staat in één map. De Container in `src/app/` koppelt de services aan elkaar (dependency injection).
 
 ```mermaid
 flowchart TB
@@ -224,6 +221,54 @@ flowchart TB
     Bus --> Browser
     Bus --> Plugins["Plugins"]
 ```
+
+### Backend (`src/`)
+
+| Map | Verantwoordelijkheid | Hangt af van |
+|---|---|---|
+| `server.js` | Startpunt van de app | `app/` |
+| `app/` | Container (dependency injection), Express-app en `ApiRouter` | alle features |
+| `core/` | Opslag, validatie, generieke CRUD, live-events (SSE), HTTP-fouten | niets |
+| `features/auth/`, `admins/` | Aanmelden en adminbeheer | `core/` |
+| `features/events/` | LAN-edities; bundelt toernooien, plaatsen en prijzen | `core/` |
+| `features/games/`, `players/`, `teams/` | Gedeelde basisgegevens | `core/` |
+| `features/templates/` | Voorgedefinieerde toernooi-instellingen | `tournaments/formats` |
+| `features/tournaments/` | Toernooien en hun levensloop | `templates/`, `games/`, `events/` |
+| `features/prizes/`, `seats/` | Prijzen en zitplan | `core/`, `players/` |
+| `features/plugins/` | Meldingen naar Discord en webhooks | `core/events` |
+
+### Toernooivormen (`src/features/tournaments/formats/`)
+
+| Map | Vormen |
+|---|---|
+| `elimination/` | Single en double elimination |
+| `league/` | Round robin, poules + knock-out, Swiss |
+| `points/` | Puntentoernooi (free-for-all) |
+| `scoreboard/` | Scorebord met vrije criteria |
+| `shared/` | Gedeelde bouwstenen: klassementstabel, match-factory, constanten |
+
+`TournamentFormat.js` is de abstracte basisklasse en `FormatRegistry.js` houdt alle vormen bij.
+
+### Frontend (`public/`)
+
+Geen buildstap: gewone ES-modules die de browser rechtstreeks laadt.
+
+| Map | Inhoud |
+|---|---|
+| `css/` | Stijlen in gamer-look (VIVES-rood tegenover cyaan) |
+| `fonts/` | Chakra Petch en Barlow, lokaal gehost (OFL-licentie) |
+| `js/core/` | DOM-helper, API-client, router, live-verbinding, formulieren, modals |
+| `js/views/` | Gedeelde weergaves: bracket, klassement, zitplan, prijzen |
+| `js/public/` | Publieke pagina's |
+| `js/admin/` | Beheerpagina's, met `resources/` voor de configuratie per entiteit |
+
+### Overig
+
+| Pad | Inhoud |
+|---|---|
+| `tests/` | Tests voor de toernooi-engine en plugins |
+| `docs/screenshots/` | Screenshots voor deze README |
+| `Dockerfile`, `docker-compose.yml` | Containerisatie met een volume voor de data |
 
 ### Uitbreiden
 
