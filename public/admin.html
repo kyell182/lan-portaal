@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beheer – VIVES LAN</title>
+  <meta name="theme-color" content="#0b0e1c">
+  <meta name="robots" content="noindex">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/tournament.css">
+  <link rel="stylesheet" href="/css/event.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/admin"><span class="brand-mark">VIVES</span><span class="brand-name">LAN beheer</span></a>
+    <span class="spacer"></span>
+    <span id="event-switch"></span>
+    <span id="live" class="live-dot">Live</span>
+    <a class="btn small" href="/" target="_blank" rel="noopener">Publieke site</a>
+    <span id="who" class="muted"></span>
+    <button id="logout" class="btn small hidden" type="button">Afmelden</button>
+  </header>
+  <div id="shell" class="admin-shell hidden">
+    <nav class="admin-side" aria-label="Beheermenu">
+      <div class="group">Dit event</div>
+      <a href="#/toernooien">Toernooien</a>
+      <a href="#/zitplan">Zitplan</a>
+      <a href="#/prijzen">Prijzen &amp; shop</a>
+      <div class="group">Gedeeld</div>
+      <a href="#/games">Games</a>
+      <a href="#/teams">Teams</a>
+      <a href="#/spelers">Spelers</a>
+      <a href="#/templates">Templates</a>
+      <div class="group">Instellingen</div>
+      <a href="#/events">Events</a>
+      <a href="#/plugins">Plugins</a>
+      <a href="#/admins">Admins</a>
+    </nav>
+    <main id="app" class="admin-main"></main>
+  </div>
+  <main id="login" class="page hidden"></main>
+  <script type="module" src="/js/admin/main.js"></script>
+</body>
+</html>

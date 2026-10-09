@@ -1,0 +1,55 @@
+/* ===== Event-hero op de startpagina ===== */
+.hero {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; align-items: center;
+  padding: 44px 40px; margin-bottom: 36px; overflow: hidden;
+  background:
+    linear-gradient(115deg, rgba(227, 6, 19, .28) 0%, rgba(227, 6, 19, 0) 45%),
+    linear-gradient(295deg, rgba(47, 224, 255, .14) 0%, rgba(47, 224, 255, 0) 40%),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0 0, calc(100% - 36px) 0, 100% 36px, 100% 100%, 36px 100%, 0 calc(100% - 36px));
+}
+.hero::before { /* diagonale VIVES-balk */
+  content: ''; position: absolute; top: -40%; left: 52%; width: 110px; height: 180%;
+  background: linear-gradient(180deg, transparent, rgba(227, 6, 19, .22), transparent);
+  transform: rotate(24deg); pointer-events: none;
+}
+.hero h1 {
+  font-size: clamp(2.4rem, 6.5vw, 4.6rem); line-height: .98; margin-bottom: 14px;
+  text-shadow: 0 0 40px rgba(227, 6, 19, .35);
+}
+.hero .tagline { font-size: 1.2rem; color: #c9d0f2; margin-bottom: 18px; }
+.hero .facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font: 600 1rem var(--font-display); margin-bottom: 24px; }
+.hero .facts span { display: inline-flex; align-items: center; gap: 8px; }
+.hero .facts span::before { content: ''; width: 6px; height: 6px; background: var(--vives); transform: rotate(45deg); }
+.hero .actions .btn { padding: 11px 22px; }
+.btn.discord { background: #5865f2; color: #fff; box-shadow: none; }
+.btn.discord:hover { background: #6d78ff; box-shadow: 0 0 24px rgba(88, 101, 242, .5); }
+
+/* Aftelling */
+.countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.countdown .unit {
+  background: rgba(11, 14, 28, .75); padding: 14px 6px 10px; text-align: center;
+  box-shadow: inset 0 0 0 1px var(--line), inset 0 -2px 0 var(--vives);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+.countdown .value { display: block; font: 700 clamp(2rem, 4.5vw, 3.2rem) var(--font-display); line-height: 1; font-variant-numeric: tabular-nums; }
+.countdown .name { display: block; margin-top: 6px; color: var(--muted); font: 600 .78rem var(--font-display); }
+.countdown-caption { color: var(--muted); font-family: var(--font-display); margin-bottom: 10px; }
+
+.live-now {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 28px;
+  background: rgba(227, 6, 19, .14); box-shadow: inset 0 0 0 1px var(--vives), 0 0 40px rgba(227, 6, 19, .25);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+.live-now strong { font: 700 clamp(2.4rem, 5vw, 3.6rem) var(--font-display); line-height: 1; display: flex; align-items: center; gap: 14px; }
+.live-now strong::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: var(--vives-hot); box-shadow: 0 0 16px var(--vives-hot); animation: pulse 1.2s infinite; }
+.live-now span { color: #ffb3ba; font-family: var(--font-display); }
+
+.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 8px 0 16px; }
+.section-title h2 { margin: 0; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding: 32px 22px; gap: 24px; }
+  .hero::before { display: none; }
+}

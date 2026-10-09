@@ -1,0 +1,146 @@
+@import url('/css/fonts.css');
+
+/*
+ * VIVES LAN – gamer-stijl.
+ * Rood team vs blauw team: VIVES-rood is de hoofdkleur, elektrisch cyaan de tegenspeler.
+ * Afgeschuinde hoeken (--cut) zijn het terugkerende vormelement.
+ */
+:root {
+  --bg: #0b0e1c;
+  --bg-2: #10152a;
+  --surface: #141a30;
+  --surface-2: #1b2342;
+  --line: #2a3560;
+  --text: #eef1ff;
+  --muted: #8e98c2;
+
+  --vives: #e30613;
+  --vives-hot: #ff2b3d;
+  --vives-glow: rgba(227, 6, 19, 0.45);
+  --vives-soft: rgba(227, 6, 19, 0.14);
+  --cyan: #2fe0ff;
+  --cyan-glow: rgba(47, 224, 255, 0.35);
+  --cyan-soft: rgba(47, 224, 255, 0.1);
+  --win: #ffd23f;
+  --win-glow: rgba(255, 210, 63, 0.35);
+  --ok: #3ef08a;
+  --cable: #3b4a80;
+
+  --font: 'Barlow', system-ui, sans-serif;
+  --font-display: 'Chakra Petch', 'Arial Narrow', sans-serif;
+  --cut: 10px;
+  --radius-sm: 2px;
+  --radius: 4px;
+  --gap: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  margin: 0;
+  color: var(--text);
+  font: 16px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* LAN-vloer: fijn raster met een rode en cyane gloed in de hoeken */
+  background:
+    radial-gradient(900px 500px at -10% -10%, rgba(227, 6, 19, 0.18), transparent 60%),
+    radial-gradient(800px 500px at 110% 110%, rgba(47, 224, 255, 0.1), transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--bg);
+  background-attachment: fixed;
+}
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; margin: 0 0 .5em; letter-spacing: .01em; }
+h1 { font-size: clamp(2.25rem, 6vw, 4rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.2rem; font-weight: 600; }
+p { margin: 0 0 1em; max-width: 70ch; }
+a { color: inherit; }
+.muted { color: var(--muted); }
+.hidden { display: none !important; }
+.back { display: inline-block; margin-bottom: 12px; color: var(--muted); text-decoration: none; font-family: var(--font-display); }
+.back::before { content: '‹ '; color: var(--vives-hot); }
+.back:hover { color: var(--text); }
+
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+::selection { background: var(--vives); color: #fff; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+input, select, textarea {
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 9px 11px; transition: border-color .15s, box-shadow .15s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-soft); }
+input[type=checkbox] { padding: 0; accent-color: var(--vives); width: 18px; height: 18px; }
+input[type=color] { padding: 2px; height: 40px; }
+select option { background: var(--surface); }
+
+/* Knoppen: afgeschuinde hoek rechtsboven */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 18px; border: 0; border-radius: 0;
+  background: var(--surface-2); color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+  font-family: var(--font-display); font-weight: 600; letter-spacing: .02em;
+  cursor: pointer; text-decoration: none; transition: background .15s, box-shadow .15s;
+}
+.btn:hover { box-shadow: inset 0 0 0 1px var(--cyan); background: #212b50; }
+.btn.primary { background: var(--vives); box-shadow: none; color: #fff; }
+.btn.primary:hover { background: var(--vives-hot); box-shadow: 0 0 24px var(--vives-glow); }
+.btn.danger { color: #ff8a95; }
+.btn.danger:hover { box-shadow: inset 0 0 0 1px var(--vives-hot); }
+.btn.small { padding: 5px 12px; font-size: .85rem; --cut: 7px; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.field { display: grid; gap: 5px; margin-bottom: 14px; }
+.field > span { font-size: .875rem; color: var(--muted); font-weight: 500; }
+.field input, .field select, .field textarea { width: 100%; }
+.field textarea { min-height: 84px; resize: vertical; }
+.field.check { display: flex; align-items: center; gap: 10px; }
+.field.check input { width: 18px; }
+.field .multi { display: flex; flex-wrap: wrap; gap: 6px; max-height: 190px; overflow: auto; padding: 8px; border: 1px solid var(--line); background: var(--bg-2); }
+.field .multi label { display: flex; gap: 6px; align-items: center; padding: 3px 10px; background: var(--surface-2); font-size: .9rem; cursor: pointer; }
+.field .multi label:has(input:checked) { box-shadow: inset 0 0 0 1px var(--cyan); }
+
+table.data { width: 100%; border-collapse: collapse; }
+table.data th, table.data td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+table.data th { color: var(--muted); font-weight: 600; font-size: .8rem; font-family: var(--font-display); letter-spacing: .04em; }
+table.data tbody tr:hover td { background: rgba(47, 224, 255, 0.035); }
+table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); }
+
+.status {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px;
+  font: 600 .78rem var(--font-display); letter-spacing: .04em;
+  background: var(--surface-2); color: var(--muted);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.status.running { background: var(--vives); color: #fff; }
+.status.running::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
+.status.finished { background: rgba(255, 210, 63, .14); color: var(--win); }
+.status.active { background: var(--cyan-soft); color: var(--cyan); }
+
+.empty {
+  padding: 40px 24px; text-align: center; color: var(--muted);
+  border: 1px dashed var(--line); background: rgba(20, 26, 48, .6);
+}
+
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--surface-2); border-left: 4px solid var(--ok);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  padding: 12px 18px; z-index: 100; max-width: calc(100% - 32px);
+  font-family: var(--font-display); font-weight: 600;
+}
+.toast.error { border-left-color: var(--vives); }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

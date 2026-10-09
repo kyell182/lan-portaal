@@ -1,0 +1,104 @@
+/* ===== Bracket: kolommen per ronde, verbonden met netwerkkabels (SVG) ===== */
+.bracket-wrap { overflow-x: auto; padding: 4px 4px 16px; margin-bottom: 12px; }
+.bracket-title { font: 700 1.3rem var(--font-display); margin: 8px 0 16px; display: flex; align-items: center; gap: 10px; }
+.bracket-title::before { content: ''; width: 4px; height: 1.1em; background: var(--vives); box-shadow: 0 0 12px var(--vives-glow); }
+.bracket { position: relative; display: flex; gap: 64px; align-items: stretch; width: max-content; }
+.bracket svg.cables { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.bracket svg.cables path { fill: none; stroke: var(--cable); stroke-width: 2; }
+.bracket svg.cables path.live { stroke: var(--cyan); filter: drop-shadow(0 0 4px var(--cyan-glow)); }
+.bracket svg.cables circle { fill: var(--bg); stroke: var(--cable); stroke-width: 2; }
+.round { display: flex; flex-direction: column; min-width: 230px; }
+.round-matches { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 18px; }
+.round-name { font: 600 .85rem var(--font-display); color: var(--muted); text-align: center; margin-bottom: 14px; letter-spacing: .05em; }
+
+/* Match: bovenste slot = rood team, onderste = blauw team */
+.match {
+  position: relative; z-index: 1; background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+.match.ready { box-shadow: inset 0 0 0 1px #4b5a94; }
+.match.clickable { cursor: pointer; }
+.match.clickable:hover { box-shadow: inset 0 0 0 1px var(--cyan); background: var(--surface-2); }
+.match .slot {
+  display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px 8px 14px;
+  font: 600 1.05rem var(--font-display); position: relative;
+}
+.match .slot::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--vives); opacity: .7; }
+.match .slot + .slot::before { background: var(--cyan); }
+.match .slot + .slot { border-top: 1px solid var(--line); }
+.match .slot .score { font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; color: var(--muted); }
+.match .slot.winner { color: var(--win); background: linear-gradient(90deg, rgba(255, 210, 63, .1), transparent 70%); }
+.match .slot.winner .score { color: var(--win); text-shadow: 0 0 10px var(--win-glow); }
+.match .slot.loser { color: var(--muted); }
+.match .slot.loser::before { opacity: .25; }
+.match .slot.tbd { color: #5d6894; font-weight: 500; font-style: italic; }
+.match .tag {
+  position: absolute; top: 0; right: 14px; font: 700 .62rem var(--font-display); letter-spacing: .06em;
+  padding: 1px 6px; background: var(--cyan); color: var(--bg); z-index: 2;
+}
+
+/* ===== Matchlijst voor competities / Swiss ===== */
+.round-block { margin-bottom: 28px; }
+.match-rows { display: grid; gap: 6px; }
+.match-row {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center;
+  padding: 10px 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line);
+  font: 600 1.05rem var(--font-display);
+  border-left: 3px solid var(--vives); border-right: 3px solid var(--cyan);
+}
+.match-row .home { text-align: right; }
+.match-row .result { font-variant-numeric: tabular-nums; min-width: 72px; text-align: center; color: var(--muted); background: var(--bg-2); padding: 2px 8px; }
+.match-row .won { color: var(--win); }
+.match-row.clickable { cursor: pointer; }
+.match-row.clickable:hover { box-shadow: inset 0 0 0 1px var(--cyan); }
+
+.standings-table { margin-bottom: 28px; }
+.standings-table tr.first td { color: var(--win); font-weight: 600; }
+.standings-table tr.first td:first-child { box-shadow: inset 3px 0 0 var(--win); }
+.standings-table td { font-family: var(--font-display); }
+
+/* ===== Zitplan ===== */
+.zone { margin-bottom: 32px; }
+.seat-grid { display: grid; gap: 8px; width: max-content; max-width: 100%; overflow-x: auto; padding: 4px; }
+.seat {
+  width: 96px; min-height: 62px; padding: 7px 9px; background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; font-size: .8rem;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+.seat .label { color: var(--muted); font: 600 .72rem var(--font-display); }
+.seat .who { font: 700 .98rem var(--font-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #5d6894; }
+.seat.taken { background: linear-gradient(160deg, rgba(227, 6, 19, .2), var(--surface) 70%); box-shadow: inset 0 0 0 1px rgba(227, 6, 19, .5); }
+.seat.taken .who { color: var(--text); }
+.seat.hit { box-shadow: inset 0 0 0 2px var(--cyan), 0 0 18px var(--cyan-glow); }
+.seat.dim { opacity: .35; }
+.seat.clickable { cursor: pointer; }
+.seat.clickable:hover { box-shadow: inset 0 0 0 1px var(--cyan); }
+
+/* ===== Prijzen ===== */
+.prize-list { display: grid; gap: 10px; }
+.prize {
+  display: grid; grid-template-columns: 76px 1fr auto; gap: 18px; align-items: center; padding: 14px;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+.prize h3 { margin: 0 0 4px; }
+.prize p { margin: 4px 0 0; }
+.prize img, .prize .ph { width: 76px; height: 76px; object-fit: cover; background: var(--surface-2); }
+.prize .ph { background: repeating-linear-gradient(135deg, var(--surface-2) 0 8px, var(--bg-2) 8px 16px); }
+.prize .place { font: 700 2rem var(--font-display); color: var(--win); text-align: right; text-shadow: 0 0 16px var(--win-glow); }
+.prize .price { font: 700 1.4rem var(--font-display); color: var(--cyan); text-align: right; }
+
+/* ===== Invoer puntentoernooi ===== */
+.entry-grid { display: grid; grid-template-columns: 1fr 84px 84px; gap: 8px 10px; align-items: center; }
+.entry-grid input { width: 100%; padding: 7px; }
+
+/* ===== Deelnemers-editor ===== */
+.participant-row { display: grid; grid-template-columns: 34px 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 6px; }
+.participant-row input { width: 100%; padding: 7px 10px; }
+.participant-row .seed { color: var(--muted); text-align: right; font: 600 .95rem var(--font-display); font-variant-numeric: tabular-nums; }
+
+/* ===== Scorebord ===== */
+.criteria-grid { display: grid; grid-template-columns: 1fr 110px 90px auto; gap: 8px 10px; align-items: center; margin: 12px 0; }
+.criteria-grid input { width: 100%; padding: 7px; }
+.score-input { width: 90px; padding: 6px 8px; text-align: right; }

@@ -1,0 +1,17 @@
+services:
+  lan-portaal:
+    build: .
+    container_name: vives-lan-portaal
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - DATA_DIR=/app/data
+    volumes:
+      - lan-data:/app/data
+
+volumes:
+  lan-data:

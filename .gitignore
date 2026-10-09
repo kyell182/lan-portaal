@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+
+# Runtime-data (JSON-opslag van het portaal)
+data
+
+# Geheimen
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE en OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# ai
+claude.md
