@@ -2,6 +2,7 @@ import { api } from '../core/Api.js';
 import { Router } from '../core/Router.js';
 import { Live } from '../core/Live.js';
 import { EventSwitcher } from '../views/EventSwitcher.js';
+import { startThemes } from '../themes/startThemes.js';
 import { adminEventContext } from './context.js';
 import { LoginView } from './LoginView.js';
 import { CrudPage } from './CrudPage.js';
@@ -63,6 +64,7 @@ class AdminApp {
     const switcher = new EventSwitcher(adminEventContext, { label: 'Event om te beheren' }).showAlways();
     document.getElementById('event-switch').append(switcher.render());
     adminEventContext.addEventListener('change', () => router.reload());
+    startThemes(adminEventContext, document.getElementById('theme-switch'));
     document.addEventListener('route', (e) => this.#markNav(e.detail));
 
     const live = new Live(document.getElementById('live'));

@@ -2,6 +2,7 @@ import { h, formatDate } from '../../core/dom.js';
 import { api } from '../../core/Api.js';
 import { Toast } from '../../core/Toast.js';
 import { adminEventContext } from '../context.js';
+import { themeCatalog } from '../../themes/ThemeCatalog.js';
 
 /** LAN-edities. Het actieve event is wat de publieke site standaard toont. */
 export const eventsResource = {
@@ -36,6 +37,7 @@ export const eventsResource = {
     { key: 'endDate', label: 'Einde', type: 'datetime-local' },
     { key: 'location', label: 'Locatie' },
     { key: 'discordUrl', label: 'Discord-uitnodiging (https://discord.gg/...)', type: 'url' },
+    { key: 'theme', label: 'Thema (bezoekers kunnen zelf een ander thema kiezen)', type: 'select', options: themeCatalog.themes.map((t) => ({ value: t.id, label: t.name })) },
     { key: 'description', label: 'Beschrijving', type: 'textarea' },
     { key: 'active', label: 'Actief op de publieke site', type: 'checkbox' },
   ],

@@ -1,8 +1,9 @@
 // Service worker: app-shell offline beschikbaar, API altijd live (network-first).
-const CACHE = 'vives-lan-v2';
+const CACHE = 'vives-lan-v5';
 const SHELL = [
   '/', '/index.html', '/manifest.webmanifest', '/icons/icon.svg',
   '/css/fonts.css', '/css/base.css', '/css/layout.css', '/css/tournament.css', '/css/event.css',
+  '/css/sprites.css', '/js/themes/theme-boot.js',
 ];
 
 self.addEventListener('install', (event) => {

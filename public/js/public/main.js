@@ -1,6 +1,7 @@
 import { Router } from '../core/Router.js';
 import { Live } from '../core/Live.js';
 import { EventSwitcher } from '../views/EventSwitcher.js';
+import { startThemes } from '../themes/startThemes.js';
 import { eventContext } from './context.js';
 import { HomePage } from './HomePage.js';
 import { TournamentListPage } from './TournamentListPage.js';
@@ -24,6 +25,7 @@ class PublicApp {
     const switcher = new EventSwitcher(eventContext, { label: 'Andere LAN-editie bekijken' });
     document.getElementById('event-switch').append(switcher.render());
     eventContext.addEventListener('change', () => this.router.reload());
+    startThemes(eventContext, document.getElementById('theme-switch'));
 
     this.live = new Live(document.getElementById('live'));
     this.live.subscribe(async (entities) => {
