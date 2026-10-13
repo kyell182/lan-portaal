@@ -1,0 +1,25 @@
+/* Voorbeeldthema: goud op donkerbruin. Overschrijf variabelen uit public/css/base.css. */
+:root {
+  --bg: #14110a;
+  --bg-2: #1c1810;
+  --surface: #221d12;
+  --surface-2: #2e2718;
+  --line: #5a4a22;
+  --text: #fff6dc;
+  --muted: #b8a878;
+
+  --vives: #f2b01e;
+  --vives-hot: #ffc94d;
+  --vives-glow: rgba(242, 176, 30, 0.5);
+  --vives-soft: rgba(242, 176, 30, 0.15);
+  --on-accent: #1c1400;
+
+  --topbar-bg: rgba(20, 17, 10, 0.85);
+  --side-bg: rgba(28, 24, 16, 0.75);
+  --unit-bg: rgba(20, 17, 10, 0.75);
+  --hover: #3a3120;
+}
+
+/* Een eigen effect: de koppen glanzen langzaam */
+h1, h2 { background: linear-gradient(100deg, #fff6dc 30%, #f2b01e 50%, #fff6dc 70%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite; }
+@keyframes shine { to { background-position: -250% 0; } }

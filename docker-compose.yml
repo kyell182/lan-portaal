@@ -10,8 +10,11 @@ services:
     environment:
       - PORT=3000
       - DATA_DIR=/app/data
+      - THEMES_DIR=/app/custom-themes
     volumes:
       - lan-data:/app/data
+      # Eigen thema's: zet een map in ./custom-themes, geen herbouw nodig (zie custom-themes/README.md)
+      - ./custom-themes:/app/custom-themes:ro
 
 volumes:
   lan-data:

@@ -29,6 +29,7 @@ Alleen admins melden aan; het publiek ziet alles live bijwerken. Handig op een b
 | **Zitplan** | Zones als raster, bezoekers zoeken hun plaats |
 | **Prijzen & shop** | Prijzenlijst per event |
 | **Plugins** | Discord-embeds en algemene webhooks |
+| **Thema's** | VIVES, Gamer, Halloween en Pasen met animaties en zwevende sprites; eigen thema's toevoegen zonder code |
 | **PWA** | Installeerbaar op telefoon of desktop |
 
 ---
@@ -78,6 +79,7 @@ Het eerste admin-account komt uit `.env`. Je beheert admins daarna onder **Behee
 | `DATA_DIR` | Map waar de JSON-data staat |
 | `COOKIE_SECURE` | `true` als het portaal achter HTTPS draait |
 | `PUBLIC_URL` | Publiek adres, voor links in Discord-berichten (optioneel) |
+| `THEMES_DIR` | Map met eigen thema's (standaard `./custom-themes`; in Docker al gekoppeld) |
 
 > Achter een reverse proxy met HTTPS: zet `COOKIE_SECURE=true` en laat de proxy `/api/live`
 > niet bufferen, bv. in nginx `proxy_buffering off;`.
@@ -91,6 +93,32 @@ npm install
 ADMIN_PASSWORD=geheim123 npm run dev
 npm test                    # test alle toernooivormen
 ```
+
+---
+
+## Thema's
+
+De site heeft vier ingebouwde thema's, met animaties en zwevende sprites:
+
+| Thema | Sfeer |
+|---|---|
+| **VIVES** | De standaardstijl: VIVES-rood tegen cyaan |
+| **Gamer** | Neon, synthwave-raster, scanlines, glitch, en knipogen naar klassieke games |
+| **Halloween** | Horror: bloedmaan, druipend bloed, klauwsporen, mist en rode ogen in het donker |
+| **Pasen** | Licht en zacht: pastel, konijntjes, vlinders, eieren en bloemblaadjes |
+
+| Gamer | Halloween |
+|---|---|
+| ![Gamer-thema](docs/screenshots/thema-gamer.png) | ![Halloween-thema](docs/screenshots/thema-halloween.png) |
+
+| Pasen | VIVES (standaard) |
+|---|---|
+| ![Pasen-thema](docs/screenshots/thema-pasen.png) | ![VIVES-thema](docs/screenshots/thema-vives.png) |
+
+- **Per event:** bij Beheer → Events kies je een thema. Dat thema toont de site standaard bij dat event.
+- **Per bezoeker:** in de topbar staat een themakeuze. *Automatisch* volgt het event, een eigen keuze wint en wordt onthouden in de browser.
+- **Eigen thema's:** zet een map in [`custom-themes/`](custom-themes/) met `theme.json`, `theme.css` en een map `sprites/`. Het thema staat meteen in de lijst, zonder herstart of herbouw. Uitleg en een voorbeeld staan in [`custom-themes/README.md`](custom-themes/README.md).
+- Wie "minder beweging" aan heeft staan in het besturingssysteem, ziet geen zwevende sprites.
 
 ---
 
@@ -230,7 +258,8 @@ flowchart TB
 | `app/` | Container (dependency injection), Express-app en `ApiRouter` | alle features |
 | `core/` | Opslag, validatie, generieke CRUD, live-events (SSE), HTTP-fouten | niets |
 | `features/auth/`, `admins/` | Aanmelden en adminbeheer | `core/` |
-| `features/events/` | LAN-edities; bundelt toernooien, plaatsen en prijzen | `core/` |
+| `features/events/` | LAN-edities; bundelt toernooien, plaatsen en prijzen | `core/`, `themes/` |
+| `features/themes/` | Leest thema-mappen van schijf (ingebouwd en eigen) en levert de lijst | niets |
 | `features/games/`, `players/`, `teams/` | Gedeelde basisgegevens | `core/` |
 | `features/templates/` | Voorgedefinieerde toernooi-instellingen | `tournaments/formats` |
 | `features/tournaments/` | Toernooien en hun levensloop | `templates/`, `games/`, `events/` |
@@ -255,18 +284,21 @@ Geen buildstap: gewone ES-modules die de browser rechtstreeks laadt.
 
 | Map | Inhoud |
 |---|---|
-| `css/` | Stijlen in gamer-look (VIVES-rood tegenover cyaan) |
+| `css/` | Basisstijl met alle kleurvariabelen (= thema VIVES) en de sprite-animatiemotor |
+| `themes/` | Ingebouwde thema's: `<id>/theme.json`, `theme.css`, `sprites/` |
 | `fonts/` | Chakra Petch en Barlow, lokaal gehost (OFL-licentie) |
 | `js/core/` | DOM-helper, API-client, router, live-verbinding, formulieren, modals |
 | `js/views/` | Gedeelde weergaves: bracket, klassement, zitplan, prijzen |
 | `js/public/` | Publieke pagina's |
 | `js/admin/` | Beheerpagina's, met `resources/` voor de configuratie per entiteit |
+| `js/themes/` | Themakeuze, thema toepassen en de sprite-laag |
 
 ### Overig
 
 | Pad | Inhoud |
 |---|---|
-| `tests/` | Tests voor de toernooi-engine en plugins |
+| `tests/` | Tests voor de toernooi-engine, events/thema's en plugins |
+| `custom-themes/` | Eigen thema's (docker-koppeling), met uitleg en een voorbeeld |
 | `docs/screenshots/` | Screenshots voor deze README |
 | `Dockerfile`, `docker-compose.yml` | Containerisatie met een volume voor de data |
 

@@ -1,5 +1,6 @@
 node_modules
 data
+custom-themes
 .env
 tests
 *.md

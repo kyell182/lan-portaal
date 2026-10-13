@@ -1,0 +1,9 @@
+{
+  "name": "Voorbeeld (goud)",
+  "description": "Startpunt voor een eigen thema: kopieer deze map en pas aan.",
+  "color": "#14110a",
+  "sprites": [
+    { "motion": "twinkle", "files": ["ster.svg"], "count": 8, "size": [16, 32], "duration": [12, 24] },
+    { "motion": "float", "files": ["ster.svg"], "count": 4, "size": [20, 36], "duration": [24, 40] }
+  ]
+}
