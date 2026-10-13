@@ -17,7 +17,7 @@
   box-shadow: inset 0 0 0 1px var(--line);
   clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
 }
-.match.ready { box-shadow: inset 0 0 0 1px #4b5a94; }
+.match.ready { box-shadow: inset 0 0 0 1px var(--line-strong); }
 .match.clickable { cursor: pointer; }
 .match.clickable:hover { box-shadow: inset 0 0 0 1px var(--cyan); background: var(--surface-2); }
 .match .slot {
@@ -28,11 +28,11 @@
 .match .slot + .slot::before { background: var(--cyan); }
 .match .slot + .slot { border-top: 1px solid var(--line); }
 .match .slot .score { font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; color: var(--muted); }
-.match .slot.winner { color: var(--win); background: linear-gradient(90deg, rgba(255, 210, 63, .1), transparent 70%); }
+.match .slot.winner { color: var(--win); background: linear-gradient(90deg, color-mix(in srgb, var(--win) 10%, transparent), transparent 70%); }
 .match .slot.winner .score { color: var(--win); text-shadow: 0 0 10px var(--win-glow); }
 .match .slot.loser { color: var(--muted); }
 .match .slot.loser::before { opacity: .25; }
-.match .slot.tbd { color: #5d6894; font-weight: 500; font-style: italic; }
+.match .slot.tbd { color: var(--faint); font-weight: 500; font-style: italic; }
 .match .tag {
   position: absolute; top: 0; right: 14px; font: 700 .62rem var(--font-display); letter-spacing: .06em;
   padding: 1px 6px; background: var(--cyan); color: var(--bg); z-index: 2;
@@ -67,8 +67,8 @@
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
 .seat .label { color: var(--muted); font: 600 .72rem var(--font-display); }
-.seat .who { font: 700 .98rem var(--font-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #5d6894; }
-.seat.taken { background: linear-gradient(160deg, rgba(227, 6, 19, .2), var(--surface) 70%); box-shadow: inset 0 0 0 1px rgba(227, 6, 19, .5); }
+.seat .who { font: 700 .98rem var(--font-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--faint); }
+.seat.taken { background: linear-gradient(160deg, color-mix(in srgb, var(--vives) 20%, transparent), var(--surface) 70%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vives) 50%, transparent); }
 .seat.taken .who { color: var(--text); }
 .seat.hit { box-shadow: inset 0 0 0 2px var(--cyan), 0 0 18px var(--cyan-glow); }
 .seat.dim { opacity: .35; }

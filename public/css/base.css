@@ -1,9 +1,13 @@
 @import url('/css/fonts.css');
+@import url('/css/sprites.css');
 
 /*
  * VIVES LAN – gamer-stijl.
  * Rood team vs blauw team: VIVES-rood is de hoofdkleur, elektrisch cyaan de tegenspeler.
  * Afgeschuinde hoeken (--cut) zijn het terugkerende vormelement.
+ *
+ * Dit is ook het standaardthema. Andere thema's (public/themes/<id>/theme.css) overschrijven deze variabelen.
+ * --vives is de hoofdaccentkleur en --cyan de tegenkleur, ook als een thema ze een andere tint geeft.
  */
 :root {
   --bg: #0b0e1c;
@@ -26,6 +30,21 @@
   --ok: #3ef08a;
   --cable: #3b4a80;
 
+  --on-accent: #fff;
+  --text-soft: #c9d0f2;
+  --danger-text: #ff8a95;
+  --live-text: #ffb3ba;
+  --hover: #212b50;
+  --line-strong: #4b5a94;
+  --faint: #5d6894;
+  --grid-line: rgba(255, 255, 255, 0.03);
+  --topbar-bg: rgba(11, 14, 28, 0.82);
+  --side-bg: rgba(16, 21, 42, 0.7);
+  --unit-bg: rgba(11, 14, 28, 0.75);
+  --empty-bg: rgba(20, 26, 48, 0.6);
+  --overlay: rgba(5, 7, 16, 0.78);
+  --shadow: rgba(0, 0, 0, 0.5);
+
   --font: 'Barlow', system-ui, sans-serif;
   --font-display: 'Chakra Petch', 'Arial Narrow', sans-serif;
   --cut: 10px;
@@ -46,10 +65,10 @@ body {
   min-height: 100vh;
   /* LAN-vloer: fijn raster met een rode en cyane gloed in de hoeken */
   background:
-    radial-gradient(900px 500px at -10% -10%, rgba(227, 6, 19, 0.18), transparent 60%),
-    radial-gradient(800px 500px at 110% 110%, rgba(47, 224, 255, 0.1), transparent 60%),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(900px 500px at -10% -10%, color-mix(in srgb, var(--vives) 18%, transparent), transparent 60%),
+    radial-gradient(800px 500px at 110% 110%, color-mix(in srgb, var(--cyan) 10%, transparent), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 32px 32px,
     var(--bg);
   background-attachment: fixed;
 }
@@ -67,7 +86,7 @@ a { color: inherit; }
 .back:hover { color: var(--text); }
 
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
-::selection { background: var(--vives); color: #fff; }
+::selection { background: var(--vives); color: var(--on-accent); }
 
 button, input, select, textarea { font: inherit; color: inherit; }
 input, select, textarea {
@@ -89,10 +108,10 @@ select option { background: var(--surface); }
   font-family: var(--font-display); font-weight: 600; letter-spacing: .02em;
   cursor: pointer; text-decoration: none; transition: background .15s, box-shadow .15s;
 }
-.btn:hover { box-shadow: inset 0 0 0 1px var(--cyan); background: #212b50; }
-.btn.primary { background: var(--vives); box-shadow: none; color: #fff; }
+.btn:hover { box-shadow: inset 0 0 0 1px var(--cyan); background: var(--hover); }
+.btn.primary { background: var(--vives); box-shadow: none; color: var(--on-accent); }
 .btn.primary:hover { background: var(--vives-hot); box-shadow: 0 0 24px var(--vives-glow); }
-.btn.danger { color: #ff8a95; }
+.btn.danger { color: var(--danger-text); }
 .btn.danger:hover { box-shadow: inset 0 0 0 1px var(--vives-hot); }
 .btn.small { padding: 5px 12px; font-size: .85rem; --cut: 7px; }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
@@ -110,7 +129,7 @@ select option { background: var(--surface); }
 table.data { width: 100%; border-collapse: collapse; }
 table.data th, table.data td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 table.data th { color: var(--muted); font-weight: 600; font-size: .8rem; font-family: var(--font-display); letter-spacing: .04em; }
-table.data tbody tr:hover td { background: rgba(47, 224, 255, 0.035); }
+table.data tbody tr:hover td { background: var(--cyan-soft); }
 table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); }
 
@@ -120,20 +139,20 @@ table.data td.num, table.data th.num { text-align: right; font-variant-numeric: 
   background: var(--surface-2); color: var(--muted);
   clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 }
-.status.running { background: var(--vives); color: #fff; }
-.status.running::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
-.status.finished { background: rgba(255, 210, 63, .14); color: var(--win); }
+.status.running { background: var(--vives); color: var(--on-accent); }
+.status.running::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.4s infinite; }
+.status.finished { background: color-mix(in srgb, var(--win) 14%, transparent); color: var(--win); }
 .status.active { background: var(--cyan-soft); color: var(--cyan); }
 
 .empty {
   padding: 40px 24px; text-align: center; color: var(--muted);
-  border: 1px dashed var(--line); background: rgba(20, 26, 48, .6);
+  border: 1px dashed var(--line); background: var(--empty-bg);
 }
 
 .toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
   background: var(--surface-2); border-left: 4px solid var(--ok);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  box-shadow: 0 10px 30px var(--shadow);
   padding: 12px 18px; z-index: 100; max-width: calc(100% - 32px);
   font-family: var(--font-display); font-weight: 600;
 }

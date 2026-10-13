@@ -1,0 +1,83 @@
+/*
+ * Sprite-motor: laat afbeeldingen uit public/themes/<id>/sprites/ bewegen.
+ * Beweging staat in theme.json per groep (motion): fly | float | fall | hop | dangle | twinkle | bob | stand.
+ * Verplaatsen gaat via de eigenschap 'translate', draaien/wippen via 'transform', zodat ze elkaar niet storen.
+ * Thema's kunnen --sprite-opacity en --sprite-filter instellen.
+ */
+.sprite-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.sprite {
+  position: absolute; width: var(--size); height: auto; left: var(--x);
+  opacity: var(--sprite-opacity, .9); filter: var(--sprite-filter, none);
+  image-rendering: pixelated; will-change: translate, transform;
+}
+
+/* fly: van links naar rechts met een golfbeweging */
+.sprite.fly {
+  top: var(--y); left: -12vw;
+  animation: sprite-fly var(--duration) linear var(--delay) infinite, sprite-bob 2.4s ease-in-out infinite alternate;
+}
+/* float: van onder naar boven, zwaaiend */
+.sprite.float {
+  bottom: -18vh;
+  animation: sprite-float var(--duration) linear var(--delay) infinite, sprite-wobble 4s ease-in-out infinite alternate;
+}
+/* fall: van boven naar onder, zwaaiend */
+.sprite.fall {
+  top: -18vh;
+  animation: sprite-fall var(--duration) linear var(--delay) infinite, sprite-wobble 5s ease-in-out infinite alternate;
+}
+/* hop: huppelt over de onderkant van het scherm */
+.sprite.hop {
+  bottom: 0; left: -12vw;
+  animation: sprite-fly-flat var(--duration) linear var(--delay) infinite, sprite-hop .9s ease-out infinite;
+}
+/* dangle: hangt aan een draad van de bovenkant (de afbeelding bevat de draad) */
+.sprite.dangle {
+  top: 0; transform-origin: 50% 0;
+  animation: sprite-drop var(--duration) ease-in-out var(--delay) infinite, sprite-swing 3s ease-in-out infinite alternate;
+}
+/* twinkle: blijft staan en pulseert */
+.sprite.twinkle {
+  top: var(--y);
+  animation: sprite-twinkle calc(var(--duration) / 5) ease-in-out var(--delay) infinite;
+}
+
+/* bob: blijft op zijn plek en wipt op en neer (bv. een vraagblok) */
+.sprite.bob {
+  top: var(--y);
+  animation: sprite-bob-place calc(var(--duration) / 8) ease-in-out var(--delay) infinite alternate;
+}
+/* stand: staat stil op de onderrand (bv. een buis); de afbeelding mag zelf animeren */
+.sprite.stand { bottom: 0; opacity: 1; }
+
+@keyframes sprite-bob-place { from { translate: 0 0; } to { translate: 0 -18px; } }
+@keyframes sprite-fly {
+  0% { translate: 0 0; }
+  25% { translate: 32vw -6vh; }
+  50% { translate: 64vw 4vh; }
+  75% { translate: 96vw -5vh; }
+  100% { translate: 128vw 0; }
+}
+@keyframes sprite-fly-flat { from { translate: 0 0; } to { translate: 128vw 0; } }
+@keyframes sprite-float {
+  0% { translate: 0 0; }
+  50% { translate: var(--sway) -62vh; }
+  100% { translate: calc(var(--sway) * -1) -128vh; }
+}
+@keyframes sprite-fall {
+  0% { translate: 0 0; }
+  50% { translate: var(--sway) 62vh; }
+  100% { translate: calc(var(--sway) * -1) 128vh; }
+}
+@keyframes sprite-drop { 0%, 100% { translate: 0 -75%; } 50% { translate: 0 0; } }
+@keyframes sprite-swing { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@keyframes sprite-bob { from { transform: translateY(-1.5vh) rotate(-5deg); } to { transform: translateY(1.5vh) rotate(5deg); } }
+@keyframes sprite-wobble { from { transform: rotate(-12deg); } to { transform: rotate(12deg); } }
+@keyframes sprite-hop { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-5vh); } }
+@keyframes sprite-twinkle {
+  0%, 100% { transform: scale(.6) rotate(0); opacity: .15; }
+  50% { transform: scale(1.1) rotate(12deg); opacity: var(--sprite-opacity, .9); }
+}
+
+@media (prefers-reduced-motion: reduce) { .sprite-layer { display: none; } }
+@media (max-width: 760px) { .sprite { --size: 36px !important; opacity: .55; } }
