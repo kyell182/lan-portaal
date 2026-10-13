@@ -1,0 +1,101 @@
+/*
+ * Gamer: neon op bijna zwart.
+ * Knipogen naar klassieke games: vraagblokken, paddenstoelen, ringen en een snelle blauwe streep, een groene buis,
+ * Tetris-blokken, een creeper, een demon en een HUD onderaan.
+ * Extra's: synthwave-raster dat naar je toe rijdt, scanlines, een CRT-vignet,
+ * af en toe een glitch op de koppen, gloeiende neonranden en een knipperende cursor.
+ */
+:root {
+  --bg: #07050f;
+  --bg-2: #0d0a1c;
+  --surface: #110c24;
+  --surface-2: #1a1238;
+  --line: #3a2a7a;
+  --text: #f1eaff;
+  --muted: #9a8bd0;
+
+  --vives: #b026ff;
+  --vives-hot: #d46bff;
+  --vives-glow: rgba(176, 38, 255, 0.55);
+  --vives-soft: rgba(176, 38, 255, 0.16);
+  --cyan: #39ff88;
+  --cyan-glow: rgba(57, 255, 136, 0.4);
+  --cyan-soft: rgba(57, 255, 136, 0.1);
+  --win: #ff3df0;
+  --win-glow: rgba(255, 61, 240, 0.4);
+  --ok: #39ff88;
+  --cable: #5a3fb0;
+
+  --text-soft: #dccfff;
+  --danger-text: #ff6b9a;
+  --live-text: #e6b3ff;
+  --hover: #261a52;
+  --line-strong: #6a4fd0;
+  --faint: #6a5aa8;
+  --grid-line: rgba(176, 38, 255, 0.07);
+  --topbar-bg: rgba(7, 5, 15, 0.85);
+  --side-bg: rgba(13, 10, 28, 0.75);
+  --unit-bg: rgba(7, 5, 15, 0.75);
+  --empty-bg: rgba(17, 12, 36, 0.6);
+  --overlay: rgba(3, 2, 8, 0.82);
+
+  --sprite-opacity: 0.9;
+  --sprite-filter: drop-shadow(0 0 6px rgba(176, 38, 255, .6));
+}
+
+/* Scanlines over de hele pagina, met een lichte CRT-flikkering */
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 200; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .55) 100%);
+  animation: crt-flicker 6s steps(1) infinite;
+}
+@keyframes crt-flicker { 0%, 100% { opacity: .5; } 48% { opacity: .5; } 50% { opacity: .38; } 52% { opacity: .5; } }
+
+/* Synthwave-vloer: een raster in perspectief dat steeds naar de kijker toe schuift */
+.sprite-layer::before {
+  content: ''; position: absolute; left: -50%; right: -50%; bottom: 0; height: 42vh; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(176, 38, 255, .55) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(rgba(57, 255, 136, .4) 1px, transparent 1px) 0 0 / 64px 64px;
+  transform: perspective(380px) rotateX(62deg); transform-origin: 50% 100%;
+  -webkit-mask: linear-gradient(transparent, #000 70%); mask: linear-gradient(transparent, #000 70%);
+  animation: grid-roll 2.4s linear infinite;
+}
+@keyframes grid-roll { to { background-position: 0 64px, 0 64px; } }
+
+/* Neon op de koppen, met een korte RGB-glitch om de paar seconden */
+h1, h2 { text-transform: uppercase; letter-spacing: .03em; text-shadow: 0 0 22px var(--vives-glow); }
+h1 { animation: glitch 7s steps(1) infinite; }
+@keyframes glitch {
+  0%, 92%, 100% { text-shadow: 0 0 22px var(--vives-glow); translate: 0 0; }
+  93% { text-shadow: -3px 0 #ff3df0, 3px 0 #39ff88; translate: 2px 0; }
+  95% { text-shadow: 3px 0 #ff3df0, -3px 0 #39e8ff; translate: -3px 1px; }
+  97% { text-shadow: -2px 0 #39ff88, 2px 0 #ff3df0; translate: 1px -1px; }
+}
+
+.brand-name::after { content: '_'; color: var(--cyan); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Neonranden */
+.panel, .t-row, .table-scroll { box-shadow: inset 0 0 0 1px var(--line), 0 0 22px rgba(176, 38, 255, .1); }
+.btn.primary { box-shadow: 0 0 16px var(--vives-glow); }
+.btn.primary:hover { box-shadow: 0 0 30px var(--vives-glow), 0 0 4px var(--vives-hot); }
+.btn:hover, .t-row:hover { box-shadow: inset 0 0 0 1px var(--cyan), 0 0 20px var(--cyan-glow); }
+.nav a.active, .tabs button.active { text-shadow: 0 0 14px currentColor; }
+.countdown .value { text-shadow: 0 0 18px var(--cyan-glow); color: var(--cyan); }
+.live-dot.on::before { box-shadow: 0 0 14px var(--ok), 0 0 4px var(--ok); }
+.status.running { animation: neon-pulse 1.6s ease-in-out infinite; }
+@keyframes neon-pulse { 50% { box-shadow: 0 0 16px var(--vives-glow); } }
+
+@media (max-width: 760px) { .sprite-layer::before { height: 28vh; } }
+
+html { scrollbar-color: #b026ff #07050f; }
+
+/* HUD onderaan, zoals in een shooter of platformgame (alleen op brede schermen) */
+body::before {
+  content: 'HP 100%   ♥ ♥ ♥   ×03   ◉ 000420   LVL 1-1'; position: fixed; left: 16px; bottom: 10px; z-index: 5; pointer-events: none;
+  font: 700 .72rem/1 var(--font-display); letter-spacing: .14em; color: var(--cyan); opacity: .55; text-shadow: 0 0 8px var(--cyan-glow);
+}
+@media (max-width: 900px) { body::before { display: none; } }

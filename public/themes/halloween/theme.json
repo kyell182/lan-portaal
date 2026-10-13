@@ -1,0 +1,15 @@
+{
+  "name": "Halloween",
+  "description": "Horror: bloedmaan, druipend bloed, kraaien, rode ogen in het donker en fladderend ongedierte.",
+  "color": "#060405",
+  "sprites": [
+    { "motion": "fly", "files": ["bat.svg", "raven.svg"], "count": 7, "size": [44, 80], "duration": [10, 20] },
+    { "motion": "fly", "files": ["fly.svg"], "count": 6, "size": [14, 20], "duration": [5, 9] },
+    { "motion": "float", "files": ["wraith.svg"], "count": 3, "size": [50, 80], "duration": [30, 46] },
+    { "motion": "dangle", "files": ["spider.svg"], "count": 3, "size": [26, 40], "duration": [10, 18] },
+    { "motion": "hop", "files": ["jack.svg", "skull.svg"], "count": 2, "size": [40, 58], "duration": [40, 60] },
+    { "motion": "fall", "files": ["drop.svg"], "count": 9, "size": [10, 18], "duration": [8, 16] },
+    { "motion": "twinkle", "files": ["eyes.svg"], "count": 6, "size": [40, 70], "duration": [10, 25] },
+    { "motion": "twinkle", "files": ["hand.svg"], "count": 3, "size": [50, 80], "duration": [25, 45] }
+  ]
+}

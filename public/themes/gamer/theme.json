@@ -1,0 +1,17 @@
+{
+  "name": "Gamer",
+  "description": "Arcade-nostalgie: vraagblokken, paddenstoelen, ringen, Tetris-blokken, een creeper en een demon, op een synthwave-raster.",
+  "color": "#07050f",
+  "sprites": [
+    { "motion": "bob", "files": ["question-block.svg"], "count": 4, "size": [40, 56], "duration": [14, 24] },
+    { "motion": "stand", "files": ["pipe.svg"], "count": 1, "size": [90, 90], "duration": [10, 10] },
+    { "motion": "float", "files": ["mushroom.svg", "ring.svg", "coin.svg", "heart.svg", "ring.svg", "controller.svg"], "count": 9, "size": [28, 50], "duration": [22, 38] },
+    { "motion": "fall", "files": ["power-star.svg", "tetris-t.svg", "tetris-l.svg", "tetris-i.svg", "tetris-s.svg"], "count": 8, "size": [26, 48], "duration": [18, 34] },
+    { "motion": "fall", "files": ["invader.svg", "invader-green.svg"], "count": 6, "size": [30, 50], "duration": [20, 36] },
+    { "motion": "fly", "files": ["pacman.svg", "pac-ghost-red.svg", "pac-ghost-cyan.svg"], "count": 4, "size": [34, 50], "duration": [16, 28] },
+    { "motion": "fly", "files": ["streak.svg"], "count": 2, "size": [150, 220], "duration": [3, 5] },
+    { "motion": "float", "files": ["demon.svg"], "count": 2, "size": [60, 90], "duration": [34, 50] },
+    { "motion": "hop", "files": ["creeper.svg"], "count": 2, "size": [40, 54], "duration": [30, 48] },
+    { "motion": "twinkle", "files": ["star.svg"], "count": 10, "size": [10, 22], "duration": [10, 20] }
+  ]
+}

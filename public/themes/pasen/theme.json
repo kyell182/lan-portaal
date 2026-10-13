@@ -1,0 +1,12 @@
+{
+  "name": "Pasen",
+  "description": "Lente: pastelkleuren, hupplende konijntjes, vlinders, eieren en vallende bloemblaadjes.",
+  "color": "#fbf8ec",
+  "sprites": [
+    { "motion": "float", "files": ["egg-green.svg", "egg-pink.svg", "egg-blue.svg"], "count": 6, "size": [30, 54], "duration": [26, 42] },
+    { "motion": "fly", "files": ["butterfly.svg", "butterfly-blue.svg", "bee.svg"], "count": 5, "size": [34, 54], "duration": [18, 30] },
+    { "motion": "hop", "files": ["bunny.svg", "chick.svg"], "count": 3, "size": [44, 64], "duration": [34, 54] },
+    { "motion": "fall", "files": ["petal.svg"], "count": 12, "size": [14, 26], "duration": [14, 26] },
+    { "motion": "twinkle", "files": ["sparkle.svg"], "count": 7, "size": [16, 30], "duration": [14, 24] }
+  ]
+}

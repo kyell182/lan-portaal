@@ -1,0 +1,95 @@
+/*
+ * Pasen: licht en zacht. Pastelkleuren, afgeronde vormen, een zon, een grasrand
+ * en bloemblaadjes die naar beneden dwarrelen.
+ */
+:root {
+  --bg: #fbf8ec;
+  --bg-2: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef6e2;
+  --line: #cfdcb6;
+  --text: #2c3a26;
+  --muted: #6c7d5e;
+
+  --vives: #4cae5b;
+  --vives-hot: #3a9a49;
+  --vives-glow: rgba(76, 174, 91, 0.35);
+  --vives-soft: rgba(76, 174, 91, 0.14);
+  --cyan: #f08fb4;
+  --cyan-glow: rgba(240, 143, 180, 0.4);
+  --cyan-soft: rgba(240, 143, 180, 0.14);
+  --win: #e0a500;
+  --win-glow: rgba(224, 165, 0, 0.35);
+  --ok: #3a9a49;
+  --cable: #b5c79a;
+
+  --on-accent: #ffffff;
+  --text-soft: #4a5a3e;
+  --danger-text: #c0392b;
+  --live-text: #2c6b36;
+  --hover: #e2efcf;
+  --line-strong: #94b06f;
+  --faint: #9db08a;
+  --grid-line: rgba(76, 174, 91, 0.07);
+  --topbar-bg: rgba(251, 248, 236, 0.88);
+  --side-bg: rgba(238, 246, 226, 0.8);
+  --unit-bg: rgba(255, 255, 255, 0.8);
+  --empty-bg: rgba(255, 255, 255, 0.6);
+  --overlay: rgba(44, 58, 38, 0.5);
+  --shadow: rgba(44, 58, 38, 0.2);
+
+  --sprite-opacity: 1;
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+
+/* Zon rechtsboven: zachte gloed met langzaam draaiende stralen */
+body::before {
+  content: ''; position: fixed; top: -140px; right: -140px; width: 420px; height: 420px; z-index: 0; pointer-events: none;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 226, 122, .32) 0deg 8deg, transparent 8deg 24deg),
+    radial-gradient(circle, #fff3b0 0 22%, rgba(255, 226, 122, .55) 40%, transparent 70%);
+  -webkit-mask: radial-gradient(circle, #000 25%, transparent 70%); mask: radial-gradient(circle, #000 25%, transparent 70%);
+  animation: sun-spin 80s linear infinite;
+}
+@keyframes sun-spin { to { rotate: 360deg; } }
+
+/* Grasrand onderaan met een golvende rand */
+body::after {
+  content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: 46px; z-index: 0; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='46' viewBox='0 0 120 46'%3E%3Cpath fill='%2386cf72' d='M0 46V22q10-14 20 0t20 0 20 0 20 0 20 0 20 0v24z'/%3E%3Cpath fill='%2362b853' d='M0 46V32q15-12 30 0t30 0 30 0 30 0v14z'/%3E%3C/svg%3E") repeat-x bottom / 120px 46px;
+}
+
+/* Alles wordt zachter en rond */
+.btn { clip-path: none; border-radius: 999px; padding-inline: 20px; }
+.btn.primary:hover { box-shadow: 0 6px 18px var(--vives-glow); }
+.btn:hover { transform: translateY(-1px); }
+.panel, .t-row, .modal, .hero, .countdown .unit, .live-now, .table-scroll, .empty, .match, .seat { clip-path: none; border-radius: var(--radius); }
+.panel::after { display: none; }
+.hero::before { display: none; }
+.status { clip-path: none; border-radius: 999px; }
+input, select, textarea { border-radius: var(--radius-sm); }
+
+.hero {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(248, 182, 207, .5), transparent 45%),
+    radial-gradient(circle at 92% 88%, rgba(154, 216, 122, .45), transparent 45%),
+    var(--surface);
+}
+.hero h1 {
+  text-shadow: none;
+  background: linear-gradient(100deg, #3a9a49, #f08fb4 55%, #e0a500); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero .facts span::before { background: var(--cyan); border-radius: 50%; transform: none; }
+
+/* Koppen veren zachtjes op bij het laden */
+h1, h2 { animation: spring-in .7s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes spring-in { from { transform: translateY(14px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Het logo schommelt als een mandje met eitjes */
+.brand-name::after { content: ' 🐣'; display: inline-block; animation: chick-wobble 2.4s ease-in-out infinite alternate; }
+@keyframes chick-wobble { from { rotate: -10deg; } to { rotate: 10deg; } }
+
+::selection { background: var(--cyan); color: #fff; }
+main.page, .admin-main { padding-bottom: 96px; }

@@ -1,0 +1,140 @@
+/*
+ * Halloween (horror): bloedmaan, druipend bloed, klauwsporen, gebroken licht en iets dat naar je kijkt in het donker.
+ * Alle effecten zijn rustig genoeg om niet als strobe te werken (geen snel flitsen).
+ */
+:root {
+  --bg: #060405;
+  --bg-2: #0d0709;
+  --surface: #130b0d;
+  --surface-2: #1d1013;
+  --line: #43161b;
+  --text: #ecdcd2;
+  --muted: #9b8580;
+
+  --vives: #c1121f;
+  --vives-hot: #ff2a3a;
+  --vives-glow: rgba(230, 20, 30, 0.5);
+  --vives-soft: rgba(193, 18, 31, 0.16);
+  --cyan: #8be08a;
+  --cyan-glow: rgba(139, 224, 138, 0.35);
+  --cyan-soft: rgba(139, 224, 138, 0.1);
+  --win: #d9c27a;
+  --win-glow: rgba(217, 194, 122, 0.35);
+  --ok: #8be08a;
+  --cable: #5a1d22;
+
+  --text-soft: #dcc5ba;
+  --danger-text: #ff7b7b;
+  --live-text: #ffb0aa;
+  --hover: #2a1317;
+  --line-strong: #7a2a31;
+  --faint: #6b5254;
+  --grid-line: rgba(193, 18, 31, 0.05);
+  --topbar-bg: rgba(8, 4, 5, 0.88);
+  --side-bg: rgba(13, 7, 9, 0.8);
+  --unit-bg: rgba(6, 4, 5, 0.8);
+  --empty-bg: rgba(19, 11, 13, 0.6);
+  --overlay: rgba(3, 1, 2, 0.85);
+
+  --sprite-opacity: 0.9;
+  --sprite-filter: drop-shadow(0 0 5px rgba(0, 0, 0, .8));
+}
+
+html { scrollbar-color: #8a0303 #0a0507; }
+::selection { background: #8a0303; color: #fff; }
+
+/* Bloedmaan met kraters en een dreigende gloed */
+body::before {
+  content: ''; position: fixed; top: 80px; right: 7vw; width: 130px; height: 130px; border-radius: 50%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 38%, rgba(60, 0, 0, .5) 0 10px, transparent 11px),
+    radial-gradient(circle at 64% 60%, rgba(60, 0, 0, .45) 0 15px, transparent 16px),
+    radial-gradient(circle at 70% 26%, rgba(60, 0, 0, .4) 0 6px, transparent 7px),
+    radial-gradient(circle at 38% 28%, #ff6a58, #b3140f 65%, #5e0707);
+  box-shadow: 0 0 70px 16px rgba(200, 10, 10, .35), 0 0 180px 60px rgba(150, 0, 0, .18);
+  animation: moon-throb 7s ease-in-out infinite alternate;
+}
+@keyframes moon-throb { from { filter: brightness(.8); } to { filter: brightness(1.12); } }
+
+/* Een verre onweersflits, ongeveer eens per 16 seconden (één vloeiende flits) */
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 150; pointer-events: none;
+  background: radial-gradient(ellipse at 70% 0%, rgba(210, 220, 255, .5), rgba(120, 100, 180, .15) 55%, transparent 80%);
+  opacity: 0; animation: lightning 16s linear infinite;
+}
+@keyframes lightning {
+  0%, 90%, 100% { opacity: 0; }
+  91% { opacity: .5; }
+  92.5% { opacity: .08; }
+  93.5% { opacity: .32; }
+  96% { opacity: 0; }
+}
+
+/* Donkere rand rond het beeld, en een lamp die af en toe even zwakker brandt (zacht, geen strobe) */
+html::before {
+  content: ''; position: fixed; inset: 0; z-index: 140; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(0, 0, 0, .7) 100%);
+}
+html::after {
+  content: ''; position: fixed; inset: 0; z-index: 141; pointer-events: none; background: #000; opacity: 0;
+  animation: bad-wiring 13s ease-in-out infinite;
+}
+@keyframes bad-wiring {
+  0%, 70%, 78%, 100% { opacity: 0; }
+  72% { opacity: .22; }
+  74% { opacity: .02; }
+  76% { opacity: .18; }
+}
+
+/* Rode en grijze mist die over de grond kruipt */
+.sprite-layer::before, .sprite-layer::after {
+  content: ''; position: absolute; left: 0; width: 200%; pointer-events: none;
+  background:
+    radial-gradient(ellipse 18% 50% at 10% 60%, rgba(120, 25, 35, .3), transparent),
+    radial-gradient(ellipse 22% 55% at 38% 50%, rgba(160, 150, 150, .12), transparent),
+    radial-gradient(ellipse 16% 45% at 62% 62%, rgba(120, 25, 35, .26), transparent),
+    radial-gradient(ellipse 24% 55% at 88% 52%, rgba(160, 150, 150, .1), transparent);
+}
+.sprite-layer::before { bottom: 0; height: 40vh; animation: fog-drift 70s linear infinite; }
+.sprite-layer::after { bottom: 4vh; height: 30vh; opacity: .7; animation: fog-drift 120s linear infinite reverse; }
+@keyframes fog-drift { from { translate: 0 0; } to { translate: -50% 0; } }
+
+/* Bloed druipt van de topbalk en het zakt traag door */
+.topbar::after {
+  left: 0; right: 0; bottom: -56px; height: 56px; opacity: 1; pointer-events: none; transform-origin: top;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='56' viewBox='0 0 300 56'%3E%3Cg fill='%23a30a10'%3E%3Crect width='300' height='7'/%3E%3Cpath d='M20 0v28a3.500 3.500 0 0 0 7 0V0zM70 0v12a3 3 0 0 0 6 0V0zM110 0v42a4 4 0 0 0 8 0V0zM170 0v20a2.500 2.500 0 0 0 5 0V0zM215 0v34a3.500 3.500 0 0 0 7 0V0zM262 0v16a3 3 0 0 0 6 0V0z'/%3E%3C/g%3E%3Cg fill='%23ff4d55' opacity='.45'%3E%3Cpath d='M21.500 8v20M111.500 8v34M216.500 8v32'/%3E%3C/g%3E%3Cg fill='%23a30a10'%3E%3Ccircle cx='23.500' cy='36' r='2.500'/%3E%3Ccircle cx='114' cy='50' r='3'/%3E%3C/g%3E%3C/svg%3E") repeat-x top left / 300px 56px;
+  animation: blood-seep 9s ease-in-out infinite;
+}
+@keyframes blood-seep { 0%, 100% { transform: scaleY(.78); } 60% { transform: scaleY(1); } }
+
+/* Koppen: bleek met een bloedrode gloed en een lamp-die-bijna-kapot-is */
+h1, h2 { color: #f1ddd3; animation: failing-light 9s linear infinite; text-shadow: 0 0 18px rgba(220, 15, 25, .65), 0 2px 0 #4a0508; }
+@keyframes failing-light { 0%, 41%, 45%, 100% { opacity: 1; } 42% { opacity: .78; } 43.500% { opacity: 1; } 44% { opacity: .86; } }
+.countdown .value { color: #ffd6d0; text-shadow: 0 0 16px var(--vives-glow); }
+
+.brand-name::after { content: ' ☠'; color: var(--vives-hot); text-shadow: 0 0 10px var(--vives-glow); }
+.brand-mark { animation: mark-throb 3.4s ease-in-out infinite alternate; }
+@keyframes mark-throb { from { box-shadow: 0 0 0 transparent; } to { box-shadow: 0 0 18px var(--vives-glow); } }
+
+/* Hero: spinnenweb linksboven, klauwsporen rechtsonder, de diagonale balk maakt plaats */
+.hero::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 150px; height: 150px; pointer-events: none; opacity: .65;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='%23b9a4a4' stroke-width='.8'%3E%3Cpath d='M0 0L100 0M0 0L90 40M0 0L65 65M0 0L40 90M0 0L0 100'/%3E%3Cpath d='M22 0Q16 16 0 22M42 0Q32 32 0 42M64 0Q48 48 0 64M86 0Q64 64 0 86'/%3E%3C/svg%3E") no-repeat;
+}
+.hero::before {
+  top: auto; left: auto; right: 14px; bottom: 8px; width: 190px; height: 190px; transform: none; opacity: .75;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke-linecap='round'%3E%3Cg stroke='%23a30a10'%3E%3Cpath stroke-width='5' d='M78 4Q56 40 62 96'/%3E%3Cpath stroke-width='4.500' d='M62 2Q42 40 46 98'/%3E%3Cpath stroke-width='4' d='M46 6Q30 42 32 96'/%3E%3Cpath stroke-width='3.500' d='M30 10Q18 42 18 90'/%3E%3C/g%3E%3Cg stroke='%23ff4d55' stroke-opacity='.4'%3E%3Cpath stroke-width='1' d='M79 8Q58 42 63 92M63 6Q44 42 47 94'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
+}
+
+/* Knoppen en rijen gloeien bloedrood bij hover */
+.btn.primary { background: linear-gradient(#d4161f, #8f0d15); }
+.btn:hover, .t-row:hover { box-shadow: inset 0 0 0 1px var(--vives-hot), 0 0 24px var(--vives-glow); }
+.btn.primary:hover { box-shadow: 0 0 30px var(--vives-glow); }
+.panel, .t-row, .modal { box-shadow: inset 0 0 0 1px var(--line), 0 8px 30px rgba(0, 0, 0, .6); }
+.status.running { animation: heartbeat 1.2s ease-in-out infinite; }
+@keyframes heartbeat { 0%, 100% { box-shadow: 0 0 0 transparent; } 15% { box-shadow: 0 0 16px var(--vives-glow); } 30% { box-shadow: 0 0 4px var(--vives-glow); } 45% { box-shadow: 0 0 18px var(--vives-glow); } }
+
+@media (max-width: 760px) {
+  body::before { width: 70px; height: 70px; top: 100px; }
+  .hero::before { width: 110px; height: 110px; }
+}
