@@ -61,3 +61,32 @@ test('alleen Discord-links toegelaten als invite', () => {
   assert.throws(() => c.lanEvents.create({ name: 'X', discordUrl: 'javascript:alert(1)' }), /Ongeldige invoer/);
   assert.ok(c.lanEvents.create({ name: 'Y', discordUrl: 'https://discord.gg/vives' }));
 });
+
+test('event accepteert een bekend thema en weigert een onbekend thema', () => {
+  const c = container();
+  const ev = c.lanEvents.create({ name: 'Spooknacht', theme: 'halloween' });
+  assert.strictEqual(ev.theme, 'halloween');
+  assert.throws(() => c.lanEvents.create({ name: 'Fout', theme: 'regenboog' }));
+});
+
+test('eigen thema-map wordt herkend, ingebouwde thema wint bij dubbele id en _map wordt genegeerd', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lan-themes-'));
+  const write = (id, json) => {
+    fs.mkdirSync(path.join(dir, id, 'sprites'), { recursive: true });
+    fs.writeFileSync(path.join(dir, id, 'theme.json'), JSON.stringify(json));
+    fs.writeFileSync(path.join(dir, id, 'sprites', 'a.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+  };
+  write('kerst', { name: 'Kerst', color: 'rood', sprites: [{ motion: 'fall', files: ['a.svg', '../x.svg', 'weg.svg'], count: 99 }, { motion: 'raar', files: ['a.svg'] }] });
+  write('gamer', { name: 'Nep-gamer' });
+  write('_klad', { name: 'Klad' });
+  const ThemeRegistry = require('../src/features/themes/ThemeRegistry');
+  const registry = new ThemeRegistry([
+    { dir: path.join(__dirname, '..', 'public', 'themes'), urlBase: '/themes' },
+    { dir, urlBase: '/custom-themes' },
+  ]);
+  const kerst = registry.list().find((t) => t.id === 'kerst');
+  assert.strictEqual(kerst.color, '#0b0e1c');
+  assert.deepStrictEqual(kerst.sprites.map((g) => [g.motion, g.files, g.count]), [['fall', ['a.svg'], 30]]);
+  assert.strictEqual(registry.list().find((t) => t.id === 'gamer').base, '/themes/gamer');
+  assert.ok(!registry.has('_klad'));
+});

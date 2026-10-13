@@ -13,6 +13,7 @@ const TemplateService = require('../features/templates/TemplateService');
 const FormatRegistry = require('../features/tournaments/formats/FormatRegistry');
 const TournamentService = require('../features/tournaments/TournamentService');
 const EventService = require('../features/events/EventService');
+const ThemeRegistry = require('../features/themes/ThemeRegistry');
 const PluginRegistry = require('../features/plugins/PluginRegistry');
 const PluginService = require('../features/plugins/PluginService');
 const NotificationHub = require('../features/plugins/NotificationHub');
@@ -37,7 +38,12 @@ class Container {
     this.templates = new TemplateService(this.store, this.events, this.formats);
     this.tournaments = new TournamentService(this.store, this.events, this.formats, this.templates, this.games.repository);
 
-    this.lanEvents = new EventService(this.store, this.events, {
+    this.themes = new ThemeRegistry([
+      { dir: config.builtInThemesDir, urlBase: '/themes' },
+      { dir: config.customThemesDir, urlBase: '/custom-themes' },
+    ]);
+
+    this.lanEvents = new EventService(this.store, this.events, this.themes, {
       toernooien: this.tournaments.repository,
       zitplaatsen: this.seats.repository,
       prijzen: this.prizes.repository,

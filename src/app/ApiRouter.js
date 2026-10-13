@@ -7,6 +7,7 @@ const SeatController = require('../features/seats/SeatController');
 const TemplateController = require('../features/templates/TemplateController');
 const TournamentController = require('../features/tournaments/TournamentController');
 const EventController = require('../features/events/EventController');
+const ThemeController = require('../features/themes/ThemeController');
 const PluginController = require('../features/plugins/PluginController');
 
 /** Koppelt elke feature aan zijn URL onder /api. */
@@ -24,6 +25,7 @@ class ApiRouter {
     r.use('/auth', new AuthController(c.auth, c.config).router());
     r.use('/admins', new AdminController(c.admins, requireAdmin).router());
     r.use('/plugins', new PluginController(c.plugins, requireAdmin).router());
+    r.use('/themes', new ThemeController(c.themes).router());
     r.use('/live', new LiveController(c.events).router());
 
     r.use('/events', new EventController(c.lanEvents, requireAdmin).router());

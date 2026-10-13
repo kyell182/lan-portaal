@@ -11,6 +11,7 @@ const schema = new Schema({
   location: { type: 'string', maxLength: 120 },
   description: { type: 'string', maxLength: 2000 },
   discordUrl: { type: 'string', maxLength: 300 },
+  theme: { type: 'string', maxLength: 30 },
   active: { type: 'boolean', default: false },
 });
 
@@ -20,9 +21,11 @@ const schema = new Schema({
  * Er is altijd hoogstens één actief event: dat toont de publieke site standaard.
  */
 class EventService extends CrudService {
-  /** @param children repositories van entiteiten die een eventId hebben */
-  constructor(store, events, children) {
+  /** @param themes ThemeRegistry om het gekozen thema te controleren
+   *  @param children repositories van entiteiten die een eventId hebben */
+  constructor(store, events, themes, children) {
     super({ repository: new Repository(store, 'events'), schema, events, entityName: 'Event' });
+    this.themes = themes;
     this.children = children;
   }
 
@@ -49,6 +52,9 @@ class EventService extends CrudService {
   beforeSave(data) {
     if (data.discordUrl && !/^https:\/\/(discord\.gg|discord\.com)\//.test(data.discordUrl)) {
       throw HttpError.badRequest('Ongeldige invoer', { discordUrl: 'Gebruik een link van discord.gg of discord.com' });
+    }
+    if (data.theme && !this.themes.has(data.theme)) {
+      throw HttpError.badRequest('Ongeldige invoer', { theme: 'Onbekend thema' });
     }
     return data;
   }

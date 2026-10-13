@@ -26,6 +26,8 @@ class App {
     app.use('/api', new ApiRouter(this.container).build());
     app.use('/api', (req, res, next) => next(HttpError.notFound('Onbekende API-route')));
 
+    app.use('/custom-themes', express.static(this.container.config.customThemesDir));
+    app.use('/custom-themes', (req, res, next) => next(HttpError.notFound('Onbekend themabestand')));
     app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
     app.get('/admin*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
     app.get('*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));

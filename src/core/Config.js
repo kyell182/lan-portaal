@@ -6,6 +6,8 @@ class Config {
   constructor(env = process.env) {
     this.port = Number(env.PORT) || 3000;
     this.dataDir = env.DATA_DIR || path.join(process.cwd(), 'data');
+    this.builtInThemesDir = path.join(__dirname, '..', '..', 'public', 'themes');
+    this.customThemesDir = env.THEMES_DIR || path.join(process.cwd(), 'custom-themes');
     this.adminUsername = env.ADMIN_USERNAME || 'admin';
     this.adminPassword = env.ADMIN_PASSWORD || '';
     this.cookieSecure = env.COOKIE_SECURE === 'true';
