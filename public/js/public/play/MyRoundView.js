@@ -20,7 +20,8 @@ export class MyRoundView {
       new RoomPanel(this.round.group.room, this.round.iAmHost, this.run, this.round.tournamentId).render(),
       this.round.game?.needsOwnName ? this.#gameName() : null,
       this.round.matches.map((match) => new ResultCard(match, this.round, this.run).render()),
-      this.#points());
+      this.#points(),
+      this.#overall());
   }
 
   /** Zaalronde: iedereen speelt tegelijk, de crew vult de uitslag in. */
@@ -29,7 +30,8 @@ export class MyRoundView {
       this.#head(),
       new RoomPanel(this.round.room, false, this.run, this.round.tournamentId).render(),
       this.round.game?.needsOwnName ? this.#gameName() : null,
-      this.#roomPlace());
+      this.#roomPlace(),
+      this.#overall());
   }
 
   #roomPlace() {
@@ -78,6 +80,15 @@ export class MyRoundView {
       h('p', { class: 'muted' }, 'Alleen invullen als het spel je een andere naam geeft (bv. Naam#1234).'),
       h('form', { onsubmit: (e) => { e.preventDefault(); this.run((api) => api.put('/rounds/me/game-name', { name: input.value })); } },
         h('label', { class: 'field' }, input), h('button', { class: 'btn', type: 'submit' }, 'Opslaan')));
+  }
+
+  #overall() {
+    const { overall } = this.me;
+    if (!overall) return null;
+    return h('section', { class: 'panel' }, h('h3', {}, 'Algemeen klassement'),
+      h('p', {}, `Plaats ${overall.place} van ${overall.of}: `, h('strong', {}, `${overall.total} punten`),
+        overall.provisional ? h('span', { class: 'status active', style: { marginLeft: '8px' } }, 'voorlopig') : null),
+      h('a', { class: 'btn small', href: '#/klassement' }, 'Bekijk het klassement'));
   }
 
   #points() {

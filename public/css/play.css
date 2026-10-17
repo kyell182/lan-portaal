@@ -24,3 +24,17 @@
 .check-buttons { margin-top: 12px; }
 .btn.big { flex: 1 1 140px; padding: 18px 16px; font-size: 1.15rem; }
 .btn.big.chosen { box-shadow: inset 0 0 0 3px var(--text); }
+
+/* Algemeen klassement en tv-modus */
+.leaderboard td.player { font-size: 1.05rem; }
+.leaderboard .provisional { color: var(--muted); margin-left: 6px; }
+.leaderboard-foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 16px; color: var(--muted); }
+
+body.tv .topbar { display: none; }
+body.tv .page { max-width: none; padding: 2vh 3vw; }
+body.tv .leaderboard table.data { font-size: 2.4vh; }
+body.tv .leaderboard td.player { font-size: 3.2vh; }
+body.tv .leaderboard td.player small { font-size: 2vh; }
+body.tv .leaderboard th { font-size: 1.8vh; }
+body.tv .leaderboard-foot { font-size: 3vh; color: var(--text); }
+body.tv h1 { font-size: 5vh; }

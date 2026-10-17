@@ -9,6 +9,8 @@ const PlayerService = require('../features/players/PlayerService');
 const PlayerImporter = require('../features/players/PlayerImporter');
 const PlayerAuthService = require('../features/player-auth/PlayerAuthService');
 const RoundService = require('../features/rounds/RoundService');
+const LeaderboardService = require('../features/leaderboard/LeaderboardService');
+const GroupPlanning = require('../features/leaderboard/GroupPlanning');
 const TeamService = require('../features/teams/TeamService');
 const PrizeService = require('../features/prizes/PrizeService');
 const SeatService = require('../features/seats/SeatService');
@@ -43,7 +45,12 @@ class Container {
     this.templates = new TemplateService(this.store, this.events, this.formats);
     this.tournaments = new TournamentService(this.store, this.events, this.formats, this.templates, this.games.repository);
 
-    this.rounds = new RoundService({ players: this.players, tournaments: this.tournaments, games: this.games, seats: this.seats });
+    const currentEvent = () => this.lanEvents.current()?.id ?? null;
+    this.leaderboard = new LeaderboardService({
+      tournaments: this.tournaments.repository, players: this.players.repository, games: this.games.repository, formats: this.formats, currentEvent,
+    });
+    this.tournaments.usePlanning(new GroupPlanning(this.leaderboard, this.tournaments.repository));
+    this.rounds = new RoundService({ players: this.players, tournaments: this.tournaments, games: this.games, seats: this.seats, leaderboard: this.leaderboard });
 
     this.themes = new ThemeRegistry([
       { dir: config.builtInThemesDir, urlBase: '/themes' },
@@ -56,7 +63,6 @@ class Container {
       prijzen: this.prizes.repository,
       spelers: this.players.repository,
     });
-    const currentEvent = () => this.lanEvents.current()?.id ?? null;
     [this.tournaments, this.seats, this.prizes, this.players].forEach((service) => service.useDefaultEvent(currentEvent));
 
     this.plugins = new PluginService(this.store, new PluginRegistry());

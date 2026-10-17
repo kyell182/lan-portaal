@@ -9,15 +9,18 @@ const MAX_GAME_NAME_LENGTH = 40;
  * Elke actie werkt op de groep van de aangemelde speler zelf, nooit op een groep uit de aanvraag.
  */
 class RoundService {
-  constructor({ players, tournaments, games, seats }) {
+  constructor({ players, tournaments, games, seats, leaderboard }) {
     this.players = players;
+    this.leaderboard = leaderboard;
     this.tournaments = tournaments;
     this.locator = new RoundLocator(players.repository, tournaments.repository);
     this.presenter = new RoundPresenter({ players: players.repository, games: games.repository, seats: seats.repository });
   }
 
   me(playerId) {
-    return this.presenter.present(this.players.get(playerId), this.locator.find(playerId));
+    const player = this.players.get(playerId);
+    const presented = this.presenter.present(player, this.locator.find(playerId));
+    return { ...presented, overall: this.leaderboard.rankOf(player.eventId, playerId) };
   }
 
   submitResult(playerId, matchNo, order) {

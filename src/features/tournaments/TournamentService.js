@@ -97,11 +97,22 @@ class TournamentService extends CrudService {
     return started;
   }
 
+  /** Koppelt de bron voor stand en host-geschiedenis die een nieuwe indeling gebruikt (zie GroupPlanning). */
+  usePlanning(planning) {
+    this.planning = planning;
+  }
+
   report(id, matchId, payload) {
     const tournament = this.#running(id);
-    const saved = this.#saveProgress(id, this.runner.report(tournament, matchId, payload));
+    const saved = this.#saveProgress(id, this.runner.report(tournament, matchId, this.#withPlanning(tournament, matchId, payload)));
     this.#announceResult(saved, matchId);
     return saved;
+  }
+
+  /** Bij het genereren van groepen: stand en eerdere hosts erbij, tenzij de aanvraag ze zelf meegeeft. */
+  #withPlanning(tournament, matchId, payload) {
+    if (matchId !== 'generate' || !this.planning) return payload;
+    return { ...this.planning.contextFor(tournament), ...payload };
   }
 
   advance(id) {

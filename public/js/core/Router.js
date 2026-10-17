@@ -26,11 +26,12 @@ export class Router {
   }
 
   #resolve() {
-    const path = location.hash.slice(1) || this.fallback;
+    const [path, search = ''] = (location.hash.slice(1) || this.fallback).split('?');
     for (const route of this.routes) {
       const match = path.match(route.regex);
       if (!match) continue;
       const params = Object.fromEntries(route.keys.map((k, i) => [k, decodeURIComponent(match[i + 1])]));
+      params.query = new URLSearchParams(search);
       this.current?.destroy?.();
       this.current = new route.Page();
       this.current.render(this.outlet, params);

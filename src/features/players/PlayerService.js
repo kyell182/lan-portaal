@@ -21,6 +21,7 @@ const schema = new Schema({
   claimedAt: { type: 'string', maxLength: 40 },
   claimVersion: { type: 'integer', default: 0 },
   gameNames: { type: 'object', default: {} },
+  tieBreakRank: { type: 'integer', min: 1 },
 });
 
 /**

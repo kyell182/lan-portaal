@@ -8,6 +8,7 @@ import { TournamentListPage } from './TournamentListPage.js';
 import { TournamentPage } from './TournamentPage.js';
 import { SeatsPage } from './SeatsPage.js';
 import { PrizesPage } from './PrizesPage.js';
+import { LeaderboardPage } from './LeaderboardPage.js';
 import { PlayPage } from './play/PlayPage.js';
 
 /** Publieke app: event in de kijker, toernooien, zitplan en prijzen, live bijgewerkt. */
@@ -21,6 +22,7 @@ class PublicApp {
       ['/toernooien/:id', TournamentPage],
       ['/zitplan', SeatsPage],
       ['/prijzen', PrizesPage],
+      ['/klassement', LeaderboardPage],
       ['/spelen', PlayPage],
     ], '/');
 
