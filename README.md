@@ -259,6 +259,17 @@ docker compose exec lan-portaal node src/presets/seedPreset.js ieee-halloween-20
 
 Het is veilig om opnieuw te draaien: wat al bestaat blijft ongemoeid. Een eigen preset maak je als map in `src/presets/` en registreer je in `src/presets/index.js`.
 
+### Uitproberen met dummy-data
+
+Voor een generale repetitie vul je een **aparte, lege data-map** met dummy-spelers (ingecheckt, met een plaats) en laat je de eerste rondes automatisch spelen. Gebruik nooit de data-map van een echt event.
+
+```bash
+DATA_DIR=./demo-data npm run seed:demo -- 60 --played=2     # 60 spelers, ronde 1 en 2 gespeeld, ronde 3 staat klaar
+DATA_DIR=./demo-data ADMIN_PASSWORD=geheim123 npm start
+```
+
+Opties: een getal = aantal spelers (standaard 60), `--played=N` = aantal gespeelde rondes (0 tot 5; bij 5 deelt de finale in op het klassement), `--preset=<id>`, `--force` = ook op een map met spelers. Open daarna `http://localhost:3000/#/klassement?tv=1` voor de tv-weergave.
+
 ---
 
 ## Plugins
