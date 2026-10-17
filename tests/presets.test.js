@@ -5,16 +5,19 @@ const os = require('os');
 const path = require('path');
 const Config = require('../src/core/Config');
 const Container = require('../src/app/Container');
-const LanEventSeeder = require('../src/seed/LanEventSeeder');
+const PresetSeeder = require('../src/presets/PresetSeeder');
+const presets = require('../src/presets');
+
+const preset = presets.get('ieee-halloween-2026');
 
 function container() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lan-seed-'));
   return new Container(new Config({ DATA_DIR: dir, JWT_SECRET: 'x' }));
 }
 
-test('seeder richt event, 6 games, templates en 7 toernooien in', () => {
+test('preset richt event, 6 games, templates en 7 toernooien in', () => {
   const c = container();
-  const report = new LanEventSeeder(c).run();
+  const report = new PresetSeeder(c).run(preset);
   assert.deepStrictEqual([report.games, report.tournaments], [6, 7]);
 
   const event = c.lanEvents.get(report.eventId);
@@ -34,12 +37,12 @@ test('seeder richt event, 6 games, templates en 7 toernooien in', () => {
   assert.notStrictEqual(social.countsForOverall, true);
 });
 
-test('seeder is herhaalbaar en laat aanpassingen in de admin ongemoeid', () => {
+test('preset is herhaalbaar en laat aanpassingen in de admin ongemoeid', () => {
   const c = container();
-  new LanEventSeeder(c).run();
+  new PresetSeeder(c).run(preset);
   const skribbl = c.games.list().find((g) => g.name === 'Skribbl.io');
   c.games.update(skribbl.id, { hostSteps: 'Aangepast door Jonas' });
-  const again = new LanEventSeeder(c).run();
+  const again = new PresetSeeder(c).run(preset);
   assert.deepStrictEqual([again.templates, again.games, again.tournaments], [0, 0, 0]);
   assert.strictEqual(c.games.get(skribbl.id).hostSteps, 'Aangepast door Jonas');
   assert.strictEqual(c.lanEvents.list().length, 1);
@@ -55,7 +58,7 @@ test('seedMissing voegt de LAN-templates toe aan een bestaande installatie', () 
 
 test('Curve Fever heeft een eigen naam in het spel en een host-kaart met afwijkingen', () => {
   const c = container();
-  new LanEventSeeder(c).run();
+  new PresetSeeder(c).run(preset);
   const curve = c.games.list().find((g) => g.name === 'Curve Fever');
   assert.strictEqual(curve.needsOwnName, true);
   assert.strictEqual(curve.joinMethod, 'code+password');
@@ -65,7 +68,7 @@ test('Curve Fever heeft een eigen naam in het spel en een host-kaart met afwijki
 
 test('social bonus: max +8 via 4 criteria met maximum 1', () => {
   const c = container();
-  const report = new LanEventSeeder(c).run();
+  const report = new PresetSeeder(c).run(preset);
   const social = c.tournaments.list({ eventId: report.eventId }).find((t) => t.name === 'Social bonus');
   const player = c.players.create({ nickname: 'Kyell', firstName: 'K', lastName: 'W', checkedIn: true, eventId: report.eventId });
   c.tournaments.setParticipants(social.id, [{ name: 'Kyell', refId: player.id }]);
@@ -76,4 +79,11 @@ test('social bonus: max +8 via 4 criteria met maximum 1', () => {
   const values = Object.fromEntries(criteria.map((x) => [x.id, 5]));
   c.tournaments.report(social.id, 'scores', { entries: [{ pid, values }] });
   assert.strictEqual(c.tournaments.standings(social.id)[0].rows[0].total, 8);
+});
+
+test('presets zijn optioneel: een lege installatie heeft geen event, games of toernooien', () => {
+  const c = container();
+  assert.deepStrictEqual([c.lanEvents.list().length, c.games.list().length, c.tournaments.list().length], [0, 0, 0]);
+  assert.deepStrictEqual(presets.list().map((p) => p.id), ['ieee-halloween-2026']);
+  assert.strictEqual(presets.get('bestaat-niet'), null);
 });
