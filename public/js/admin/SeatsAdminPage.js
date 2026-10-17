@@ -13,7 +13,7 @@ export class SeatsAdminPage extends Page {
   get watches() { return ['seats', 'players']; }
 
   async load() {
-    const [seats, players] = await Promise.all([api.get(`/seats${adminEventContext.query()}`), api.get('/players')]);
+    const [seats, players] = await Promise.all([api.get(`/seats${adminEventContext.query()}`), api.get(`/players${adminEventContext.query()}`)]);
     return { seats, players };
   }
 

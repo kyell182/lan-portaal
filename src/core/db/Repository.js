@@ -26,6 +26,21 @@ class Repository {
     return item;
   }
 
+  /** Voegt veel items toe met één schrijfbeurt (grote imports). */
+  createMany(list) {
+    const now = new Date().toISOString();
+    const items = list.map((data) => ({ id: crypto.randomUUID(), ...data, createdAt: now, updatedAt: now }));
+    this.#save([...this.all(), ...items]);
+    return items;
+  }
+
+  /** Past veel items aan met één schrijfbeurt. patches = [{ id, patch }]. */
+  updateMany(patches) {
+    const now = new Date().toISOString();
+    const byId = new Map(patches.map(({ id, patch }) => [id, patch]));
+    this.#save(this.all().map((item) => (byId.has(item.id) ? { ...item, ...byId.get(item.id), id: item.id, updatedAt: now } : item)));
+  }
+
   update(id, patch) {
     const current = this.findById(id);
     if (!current) return null;
@@ -39,6 +54,14 @@ class Repository {
     const after = before.filter((item) => item.id !== id);
     this.#save(after);
     return after.length !== before.length;
+  }
+
+  /** Verwijdert alle items die aan de voorwaarde voldoen en geeft hun id's terug. */
+  deleteWhere(predicate) {
+    const before = this.all();
+    const removed = before.filter(predicate).map((item) => item.id);
+    if (removed.length) this.#save(before.filter((item) => !removed.includes(item.id)));
+    return removed;
   }
 
   count() {

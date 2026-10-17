@@ -46,7 +46,7 @@ test('event met inhoud kan niet verwijderd worden, leeg event wel', () => {
 
 test('speler kan in verschillende events een plaats hebben, maar niet twee in hetzelfde', () => {
   const c = container();
-  const player = c.players.create({ nickname: 'Kyell' });
+  const player = c.players.create({ nickname: 'Kyell', firstName: 'Kyell', lastName: 'De Windt' });
   const e1 = c.lanEvents.create({ name: 'Editie 1' });
   const e2 = c.lanEvents.create({ name: 'Editie 2' });
   const [a1, a2] = c.seats.createGrid({ eventId: e1.id, zone: 'Aula', rows: 1, cols: 2 });

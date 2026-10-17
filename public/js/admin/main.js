@@ -12,6 +12,8 @@ import { AdminsPage } from './AdminsPage.js';
 import { PluginsPage } from './PluginsPage.js';
 import { TournamentsAdminPage } from './tournaments/TournamentsAdminPage.js';
 import { TournamentDetailPage } from './tournaments/TournamentDetailPage.js';
+import { PlayerImportPage } from './players/PlayerImportPage.js';
+import { CheckInPage } from './players/CheckInPage.js';
 import { eventsResource } from './resources/events.js';
 import { gamesResource } from './resources/games.js';
 import { playersResource } from './resources/players.js';
@@ -57,6 +59,8 @@ class AdminApp {
       ['/games', CrudPage.for(gamesResource)],
       ['/teams', CrudPage.for(teamsResource)],
       ['/spelers', CrudPage.for(playersResource)],
+      ['/spelers/importeren', PlayerImportPage],
+      ['/checkin', CheckInPage],
       ['/plugins', PluginsPage],
       ['/admins', AdminsPage],
     ], adminEventContext.id ? '/toernooien' : '/events');

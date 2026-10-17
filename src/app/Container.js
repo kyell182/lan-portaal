@@ -6,6 +6,7 @@ const AuthService = require('../features/auth/AuthService');
 const AuthMiddleware = require('../features/auth/AuthMiddleware');
 const GameService = require('../features/games/GameService');
 const PlayerService = require('../features/players/PlayerService');
+const PlayerImporter = require('../features/players/PlayerImporter');
 const TeamService = require('../features/teams/TeamService');
 const PrizeService = require('../features/prizes/PrizeService');
 const SeatService = require('../features/seats/SeatService');
@@ -32,6 +33,7 @@ class Container {
 
     this.games = new GameService(this.store, this.events);
     this.players = new PlayerService(this.store, this.events);
+    this.playerImporter = new PlayerImporter(this.players);
     this.teams = new TeamService(this.store, this.events, this.players.repository);
     this.prizes = new PrizeService(this.store, this.events);
     this.seats = new SeatService(this.store, this.events, this.players.repository);
@@ -47,9 +49,10 @@ class Container {
       toernooien: this.tournaments.repository,
       zitplaatsen: this.seats.repository,
       prijzen: this.prizes.repository,
+      spelers: this.players.repository,
     });
     const currentEvent = () => this.lanEvents.current()?.id ?? null;
-    [this.tournaments, this.seats, this.prizes].forEach((service) => service.useDefaultEvent(currentEvent));
+    [this.tournaments, this.seats, this.prizes, this.players].forEach((service) => service.useDefaultEvent(currentEvent));
 
     this.plugins = new PluginService(this.store, new PluginRegistry());
     this.notifications = new NotificationHub(this.events, this.plugins, { publicUrl: config.publicUrl });
