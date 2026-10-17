@@ -145,3 +145,20 @@ test('optionele naam in het spel wordt per game bewaard', async () => {
     assert.strictEqual(s.c.players.get(s.players[0].id).gameNames[game.id], 'Kyell#1234');
   } finally { s.close(); }
 });
+
+test('AutoConfirmer bevestigt na de ingestelde tijd en meldt dat aan de speler', async () => {
+  const s = await scenario();
+  try {
+    const { group } = groupOf(s.c, s.tournament.id, s.players[0]);
+    const members = s.players.filter((p) => group.pids.includes(groupOf(s.c, s.tournament.id, p).pid));
+    const host = members.find((p) => groupOf(s.c, s.tournament.id, p).pid === group.hostPid);
+    const other = members.find((p) => p !== host);
+    s.c.tournaments.report(s.tournament.id, 'submit:' + group.id + ':1', { by: group.hostPid, order: group.pids });
+    assert.ok(s.c.rounds.me(other.id).round.matches[0].autoConfirmAt);
+
+    assert.strictEqual(s.c.autoConfirmer.sweep(Date.now()), 0);
+    assert.strictEqual(s.c.autoConfirmer.sweep(Date.now() + 181000), 1);
+    assert.strictEqual(s.c.rounds.me(other.id).round.matches[0].status, 'confirmed');
+    assert.strictEqual(s.c.autoConfirmer.sweep(Date.now() + 999000), 0);
+  } finally { s.close(); }
+});

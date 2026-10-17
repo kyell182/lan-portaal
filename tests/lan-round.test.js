@@ -181,3 +181,34 @@ test('klassement toont voorlopige en definitieve punten', () => {
 test('ongeldige puntentabel in de instellingen geeft een veldfout', () => {
   assert.throws(() => format.normalizeSettings({ pointsBySize: '8=0,0' }), /Ongeldige invoer/);
 });
+
+test('automatisch bevestigen: pas na de ingestelde tijd en alleen zonder melding', () => {
+  const t = setup(4, { autoConfirmSeconds: 60 });
+  t.act('submit:g1:1', { by: t.group().hostPid, order: t.group().pids });
+  const submittedAt = Date.parse(t.match().submittedAt);
+  assert.strictEqual(format.autoConfirmDue(t.state, t.settings, submittedAt + 59000), false);
+  assert.strictEqual(format.autoConfirmDue(t.state, t.settings, submittedAt + 60000), true);
+  t.act('autoconfirm', { now: submittedAt + 61000 });
+  assert.deepStrictEqual([t.match().status, t.match().confirmedBy], ['confirmed', 'auto']);
+  assert.strictEqual(format.autoConfirmDue(t.state, t.settings, submittedAt + 999000), false);
+});
+
+test('een melding of instelling 0 voorkomt automatisch bevestigen', () => {
+  const disputed = setup(4, { autoConfirmSeconds: 60 });
+  disputed.act('submit:g1:1', { by: disputed.group().hostPid, order: disputed.group().pids });
+  disputed.act('dispute:g1:1', { by: disputed.others()[0] });
+  const later = Date.parse(disputed.match().submittedAt) + 3600000;
+  assert.strictEqual(format.autoConfirmDue(disputed.state, disputed.settings, later), false);
+
+  const never = setup(4, { autoConfirmSeconds: 0 });
+  never.act('submit:g1:1', { by: never.group().hostPid, order: never.group().pids });
+  assert.strictEqual(format.autoConfirmDue(never.state, never.settings, Date.parse(never.match().submittedAt) + 3600000), false);
+});
+
+test('autoconfirm is een crew-actie en OK van de helft blijft de timer niet in de weg staan', () => {
+  const t = setup(4, { autoConfirmSeconds: 30 });
+  t.act('submit:g1:1', { by: t.group().hostPid, order: t.group().pids });
+  assert.throws(() => t.act('autoconfirm', { by: 'p1' }), /Enkel de crew/);
+  t.act('confirm:g1:1', { by: t.others()[0] });
+  assert.strictEqual(format.autoConfirmDue(t.state, t.settings, Date.parse(t.match().submittedAt) + 31000), true);
+});

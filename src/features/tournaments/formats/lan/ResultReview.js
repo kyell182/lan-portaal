@@ -61,6 +61,17 @@ class ResultReview {
     return Object.assign(match, { status: MATCH_STATUS.SUBMITTED });
   }
 
+  /** Is een ingestuurde uitslag zonder meldingen lang genoeg blijven staan om automatisch bevestigd te worden? */
+  static autoConfirmDue(match, seconds, nowMs) {
+    if (!(seconds > 0) || match.status !== MATCH_STATUS.SUBMITTED || match.reports.length) return false;
+    return nowMs - Date.parse(match.submittedAt) >= seconds * 1000;
+  }
+
+  static autoConfirm(match, now) {
+    ResultReview.#log(match, CREW, 'auto-confirm', now);
+    ResultReview.#confirm(match, CONFIRMED_BY.AUTO);
+  }
+
   /** Haalt een speler uit de uitslag en uit de controle. */
   static dropPlayer(match, group, pid) {
     match.order = match.order.filter((p) => p !== pid);

@@ -46,7 +46,8 @@ export class ResultCard {
   #progress() {
     const { match } = this;
     if (match.status === 'confirmed') return h('p', { class: 'muted' }, 'Bevestigd, de punten zijn definitief.');
-    return h('p', { class: 'muted' }, `${match.okCount} van ${match.reviewerCount} OK${match.reportCount ? `, ${match.reportCount} gemeld` : ''}`);
+    const auto = match.autoConfirmAt ? ` Zonder melding wordt de uitslag automatisch bevestigd om ${new Date(match.autoConfirmAt).toLocaleTimeString('nl-BE')}.` : '';
+    return h('p', { class: 'muted' }, `${match.okCount} van ${match.reviewerCount} OK${match.reportCount ? `, ${match.reportCount} gemeld` : ''}.${auto}`);
   }
 
   #buttons() {

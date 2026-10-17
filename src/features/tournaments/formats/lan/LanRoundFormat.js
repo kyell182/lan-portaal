@@ -12,11 +12,11 @@ const { ResultReview, MATCH_STATUS, CHECK, CREW } = require('./ResultReview');
 const ACTION = Object.freeze({
   GENERATE: 'generate', HOST: 'host', ROOM: 'room', REMOVE: 'remove', TIEBREAK: 'tiebreak',
   SUBMIT: 'submit', CONFIRM: 'confirm', DISPUTE: 'dispute', CLOSE: 'close', REOPEN: 'reopen',
-  ROOM_RESULT: 'roomresult', ROOM_REPORT: 'roomreport', CONVERT: 'convertToGroups',
+  AUTO_CONFIRM: 'autoconfirm', ROOM_RESULT: 'roomresult', ROOM_REPORT: 'roomreport', CONVERT: 'convertToGroups',
 });
 const MODE = Object.freeze({ GROUPS: 'groups', ROOM: 'room' });
 const CREW_ONLY = new Set([
-  ACTION.GENERATE, ACTION.HOST, ACTION.REMOVE, ACTION.TIEBREAK, ACTION.CLOSE, ACTION.REOPEN, ACTION.ROOM_RESULT, ACTION.CONVERT,
+  ACTION.GENERATE, ACTION.HOST, ACTION.REMOVE, ACTION.TIEBREAK, ACTION.CLOSE, ACTION.REOPEN, ACTION.ROOM_RESULT, ACTION.CONVERT, ACTION.AUTO_CONFIRM,
 ]);
 
 const ROOM_ONLY = new Set([ACTION.ROOM_RESULT, ACTION.ROOM_REPORT, ACTION.CONVERT]);
@@ -53,6 +53,7 @@ class LanRoundFormat extends TournamentFormat {
         maxLength: 600,
         default: '8=10,7,5,3,1,1,1,1; 7=10,6,4,2,1,1,1; 6=10,6,3,1,1,1; 5=10,6,3,1,1; 4=10,5,2,1; 3=10,4,1; 2=10,3',
       },
+      { key: 'autoConfirmSeconds', label: 'Automatisch bevestigen na (sec, 0 = nooit)', type: 'integer', min: 0, max: 900, default: 180 },
       { key: 'rankBands', label: 'Rangbanden (zaalronde)', type: 'string', maxLength: 300, default: '1=12; 2=10; 3=9; 4-5=8; 6-10=7; 11-20=5; 21-35=4; 36-50=2; rest=1' },
     ];
   }
@@ -81,6 +82,7 @@ class LanRoundFormat extends TournamentFormat {
     if (state.mode === MODE.ROOM) return this.#reportRoom(state, action, { payload, by, now }, settings, participants);
     if (action === ACTION.GENERATE) return this.groups.generate(state, participants, settings, payload);
     if (action === ACTION.CLOSE) return this.#close(state, payload);
+    if (action === ACTION.AUTO_CONFIRM) return LanRoundFormat.#autoConfirm(state, settings, payload.now ?? Date.now(), now);
     if (ROOM_ONLY.has(action)) throw HttpError.conflict('Dit is geen zaalronde');
     const group = LanRoundFormat.#group(state, groupId);
     if (action === ACTION.SUBMIT || action === ACTION.CONFIRM || action === ACTION.DISPUTE) {
@@ -96,6 +98,12 @@ class LanRoundFormat extends TournamentFormat {
   /** Ronde-punten per speler (voor het algemeen klassement). */
   results(state, settings, participants = []) {
     return LanResults.compute(state, settings, participants);
+  }
+
+  /** Zijn er uitslagen die nu automatisch bevestigd mogen worden? (Goedkope controle voor de timer.) */
+  autoConfirmDue(state, settings, nowMs = Date.now()) {
+    if (state.closed || state.mode !== MODE.GROUPS) return false;
+    return LanRoundFormat.#matches(state).some(({ match }) => ResultReview.autoConfirmDue(match, settings.autoConfirmSeconds, nowMs));
   }
 
   isFinished(state) {
@@ -144,6 +152,17 @@ class LanRoundFormat extends TournamentFormat {
     if (!state.groups.length) throw HttpError.conflict('Genereer eerst de groepen');
     if (open && payload.force !== true) throw HttpError.conflict(`${open} uitslag(en) nog niet bevestigd`);
     return { ...state, closed: true };
+  }
+
+  static #autoConfirm(state, settings, nowMs, now) {
+    LanRoundFormat.#matches(state)
+      .filter(({ match }) => ResultReview.autoConfirmDue(match, settings.autoConfirmSeconds, nowMs))
+      .forEach(({ match }) => ResultReview.autoConfirm(match, now));
+    return state;
+  }
+
+  static #matches(state) {
+    return state.groups.flatMap((group) => group.matches.map((match) => ({ group, match })));
   }
 
   static #roomInfo(state, payload, by) {

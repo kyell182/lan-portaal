@@ -6,6 +6,7 @@ async function main() {
   const config = new Config();
   const container = new Container(config);
   await container.seed();
+  container.autoConfirmer.start();
   const app = new App(container).build();
   app.listen(config.port, () => console.log(`[lan-portaal] draait op poort ${config.port}`));
 }

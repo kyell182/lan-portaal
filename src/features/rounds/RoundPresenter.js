@@ -29,7 +29,7 @@ class RoundPresenter {
       myGameName: tournament.gameId ? player.gameNames?.[tournament.gameId] ?? '' : '',
       seat: this.#seat(player.id),
       group: { id: group.id, name: group.name, members, host: members.find((m) => m.isHost) ?? null, room: group.room },
-      matches: group.matches.map((match) => RoundPresenter.#match(match, group, participant.id, iAmHost)),
+      matches: group.matches.map((match) => RoundPresenter.#match(match, group, participant.id, iAmHost, tournament.settings.autoConfirmSeconds)),
       myResult: LanResults.compute(tournament.state, tournament.settings, tournament.participants).find((r) => r.pid === participant.id) ?? null,
     } };
   }
@@ -72,7 +72,7 @@ class RoundPresenter {
   }
 
   /** Meldingen met reden zijn alleen voor de host; de rest ziet enkel hoeveel er zijn. */
-  static #match(match, group, myPid, iAmHost) {
+  static #match(match, group, myPid, iAmHost, autoConfirmSeconds) {
     const reviewers = GroupMembers.reviewers(group);
     return {
       no: match.no,
@@ -85,8 +85,15 @@ class RoundPresenter {
       reviewerCount: reviewers.length,
       reportCount: match.reports.length,
       reports: iAmHost ? match.reports.map(({ pid, reason }) => ({ pid, reason })) : [],
+      autoConfirmAt: RoundPresenter.#autoConfirmAt(match, autoConfirmSeconds),
       okCount: reviewers.filter((pid) => match.checks[pid] === CHECK.OK).length,
     };
+  }
+
+  /** Tijdstip waarop de uitslag vanzelf bevestigd wordt als niemand meldt, of null. */
+  static #autoConfirmAt(match, seconds) {
+    if (!(seconds > 0) || match.status !== 'submitted' || match.reports.length) return null;
+    return new Date(Date.parse(match.submittedAt) + seconds * 1000).toISOString();
   }
 
   static #nameOf({ id, nickname, firstName, lastName }) {
