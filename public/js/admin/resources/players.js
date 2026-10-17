@@ -26,6 +26,7 @@ export const playersResource = {
     { key: 'email', label: 'E-mail', type: 'email' },
     { key: 'studyProgram', label: 'Opleiding / klas' },
     { key: 'device', label: 'Toestel (laptop, pc, ...)' },
+    { key: 'tieBreakRank', label: 'Tie-break plaats (uitslag 1-tegen-1, laagste wint)', type: 'number', min: 1 },
     { key: 'checkedIn', label: 'Ingecheckt', type: 'checkbox' },
     { key: 'notes', label: 'Notities (enkel admins)', type: 'textarea' },
   ],

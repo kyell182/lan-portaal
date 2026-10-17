@@ -13,6 +13,9 @@ import { ScoreboardView } from '../../views/ScoreboardView.js';
 import { TournamentEditDialog } from './TournamentEditDialog.js';
 import { TournamentActions } from './TournamentActions.js';
 import { adminEventContext } from '../context.js';
+import { LanRoundAdmin } from './lan/LanRoundAdmin.js';
+
+const SCHEMA_TAB_LABEL = { scoreboard: 'Punten', 'lan-round': 'Groepen en uitslag' };
 
 /** Beheer van één toernooi: deelnemers, start, uitslagen, volgende ronde en klassement. */
 export class TournamentDetailPage extends Page {
@@ -61,7 +64,7 @@ export class TournamentDetailPage extends Page {
         actions.render()),
       h('div', { class: 'tabs', role: 'tablist' },
         this.#tab('deelnemers', `Deelnemers (${t.participants.length})`),
-        this.#tab('schema', t.formatKey === 'scoreboard' ? 'Punten' : 'Speelschema'),
+        this.#tab('schema', SCHEMA_TAB_LABEL[t.formatKey] || 'Speelschema'),
         this.#tab('stand', 'Klassement')),
       this.#body(data));
   }
@@ -74,6 +77,7 @@ export class TournamentDetailPage extends Page {
     }
     if (this.tab === 'stand') return new StandingsView(standings).render();
     if (t.formatKey === 'scoreboard' && t.state) return this.#scoreboard(t);
+    if (t.formatKey === 'lan-round') return new LanRoundAdmin(t, players, () => this.reload()).render();
     const names = new Map(t.participants.map((p) => [p.id, p.name]));
     this.view = new TournamentView(t, {
       onMatchClick: (m) => new ResultDialog(t, m, names).open(),

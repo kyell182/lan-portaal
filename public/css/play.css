@@ -44,3 +44,20 @@ body.tv h1 { font-size: 5vh; }
 .host-settings td { padding: 6px 10px; }
 .host-settings tr.changed td { color: #f2b705; }
 .host-settings tr.changed td:first-child { box-shadow: inset 3px 0 0 #f2b705; }
+
+/* Beheer van LAN-rondes */
+.status.submitted { background: var(--cyan-soft); color: var(--cyan); }
+.status.open { background: var(--surface-2); color: var(--muted); }
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; margin-top: 16px; }
+.board-column { display: grid; gap: 8px; align-content: start; }
+.board-column > h3 { margin: 0 0 4px; }
+.board-column.disputed > h3 { color: var(--danger-text); }
+.board-card { display: grid; gap: 4px; text-align: left; padding: 12px; background: var(--surface); border: 1px solid var(--line); color: inherit; cursor: pointer; font: inherit; }
+.board-card:hover { box-shadow: inset 0 0 0 1px var(--cyan); }
+.board-column.disputed .board-card { box-shadow: inset 3px 0 0 var(--vives-hot); }
+.board-actions { margin-bottom: 12px; }
+.group-dialog { display: grid; gap: 12px; max-height: 70vh; overflow-y: auto; min-width: min(560px, 80vw); }
+.rank-list { padding-left: 24px; display: grid; gap: 6px; margin: 12px 0; }
+.rank-list li { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.group-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .board { grid-template-columns: 1fr; } }

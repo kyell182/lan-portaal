@@ -1,6 +1,6 @@
 import { h } from '../../core/dom.js';
 import { playerLabel } from '../../views/playerLabel.js';
-import { OrderPicker } from './OrderPicker.js';
+import { OrderPicker } from '../../views/OrderPicker.js';
 
 const STATUS_LABEL = { open: 'Wacht op uitslag', submitted: 'Ingestuurd, wacht op controle', confirmed: 'Bevestigd', disputed: 'Betwist' };
 const EDITABLE = new Set(['open', 'submitted', 'disputed']);

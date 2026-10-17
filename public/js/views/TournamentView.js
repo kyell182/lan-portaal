@@ -4,6 +4,7 @@ import { MatchListView } from './MatchListView.js';
 import { PointsRoundsView } from './PointsRoundsView.js';
 import { ScoreboardView } from './ScoreboardView.js';
 import { BYE } from './MatchCard.js';
+import { LanGroupsView } from './LanGroupsView.js';
 
 const BRACKET_TITLES = { W: 'Winners-bracket', L: 'Losers-bracket', GF: 'Grand final', '3P': null };
 
@@ -25,6 +26,7 @@ export class TournamentView {
     if (!state) return h('div', { class: 'empty' }, 'Het schema verschijnt zodra het toernooi gestart is.');
     if (formatKey === 'points') return new PointsRoundsView({ rounds: state.rounds, names: this.names, onRoundClick: this.onRoundClick }).render();
     if (formatKey === 'scoreboard') return new ScoreboardView(state.criteria).render();
+    if (formatKey === 'lan-round') return new LanGroupsView(this.t).render();
     if (formatKey === 'single-elimination' || formatKey === 'double-elimination') return this.#brackets(state.matches);
     if (formatKey === 'groups-knockout') return this.#groupsKnockout(state);
     return this.#list(state.matches);

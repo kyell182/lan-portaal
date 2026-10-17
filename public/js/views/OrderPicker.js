@@ -1,5 +1,5 @@
-import { h } from '../../core/dom.js';
-import { playerLabel } from '../../views/playerLabel.js';
+import { h } from '../core/dom.js';
+import { playerLabel } from './playerLabel.js';
 
 /** De host tikt de spelers aan in volgorde van eindklassering (1e eerst). Wie afwezig is, tikt hij niet aan. */
 export class OrderPicker {
