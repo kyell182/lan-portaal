@@ -10,15 +10,15 @@ const WEIGHT_SEPARATOR = '=';
  * Een criterium: { id, label, weight, max } — max = null betekent onbeperkt.
  */
 class CriteriaList {
-  /** Zet de instelling "Aanwezigheid=10; Social gelikt=5" om naar criteria zonder id. */
+  /** Zet de instelling "Aanwezigheid=10; Social gelikt=5=1" (label=punten[=maximum]) om naar criteria zonder id. */
   static parse(text) {
     return String(text || '')
       .split(PAIR_SEPARATOR)
       .map((pair) => pair.trim())
       .filter(Boolean)
       .map((pair) => {
-        const [label, weight] = pair.split(WEIGHT_SEPARATOR);
-        return { label, weight: weight === undefined ? 1 : weight };
+        const [label, weight, max] = pair.split(WEIGHT_SEPARATOR);
+        return { label, weight: weight === undefined ? 1 : weight, max };
       });
   }
 

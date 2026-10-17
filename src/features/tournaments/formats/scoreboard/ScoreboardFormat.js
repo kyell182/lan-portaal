@@ -21,7 +21,7 @@ class ScoreboardFormat extends TournamentFormat {
 
   get settingsFields() {
     return [
-      { key: 'criteria', label: 'Startcriteria (naam=punten per eenheid, gescheiden door ;)', type: 'string', maxLength: 600, default: 'Aanwezigheid=10; Social gelikt=5; Social gevolgd=5' },
+      { key: 'criteria', label: 'Startcriteria (naam=punten per eenheid[=maximum], gescheiden door ;)', type: 'string', maxLength: 600, default: 'Aanwezigheid=10; Social gelikt=5; Social gevolgd=5' },
     ];
   }
 

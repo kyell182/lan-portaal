@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "seed:lan": "node src/seed/seedLan.js",
     "test": "node --test tests/*.test.js"
   },
   "engines": {

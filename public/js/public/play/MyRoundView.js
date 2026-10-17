@@ -2,6 +2,7 @@ import { h } from '../../core/dom.js';
 import { playerLabel } from '../../views/playerLabel.js';
 import { ResultCard } from './ResultCard.js';
 import { RoomPanel } from './RoomPanel.js';
+import { HostCard } from './HostCard.js';
 
 /** Alles over mijn lopende ronde: groep, host, room, eigen spelnaam, uitslag en punten. */
 export class MyRoundView {
@@ -18,6 +19,7 @@ export class MyRoundView {
       this.#head(),
       this.#groupPanel(),
       new RoomPanel(this.round.group.room, this.round.iAmHost, this.run, this.round.tournamentId).render(),
+      this.round.iAmHost ? new HostCard(this.round.game).render() : null,
       this.round.game?.needsOwnName ? this.#gameName() : null,
       this.round.matches.map((match) => new ResultCard(match, this.round, this.run).render()),
       this.#points(),

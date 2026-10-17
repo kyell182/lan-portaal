@@ -9,6 +9,13 @@ const schema = new Schema({
   platform: { type: 'string', maxLength: 40, default: 'PC' },
   color: { type: 'string', maxLength: 9, default: '#E2001A' },
   description: { type: 'string', maxLength: 500 },
+  hostSteps: { type: 'string', maxLength: 1500 },
+  hostSettings: { type: 'string', maxLength: 1500 },
+  joinMethod: { type: 'string', values: ['link', 'code', 'code+password', 'link+password'] },
+  needsOwnName: { type: 'boolean', default: false },
+  maxPlayers: { type: 'integer', min: 2, max: 1000 },
+  estMinutes: { type: 'integer', min: 1, max: 60 },
+  testChecklist: { type: 'string', maxLength: 1500 },
 });
 
 /** Games waarin toernooien gespeeld worden (CS2, LoL, Rocket League...). */

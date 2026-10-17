@@ -38,3 +38,9 @@ body.tv .leaderboard td.player small { font-size: 2vh; }
 body.tv .leaderboard th { font-size: 1.8vh; }
 body.tv .leaderboard-foot { font-size: 3vh; color: var(--text); }
 body.tv h1 { font-size: 5vh; }
+
+/* Host-kaart */
+.host-steps { margin: 12px 0; padding-left: 24px; display: grid; gap: 6px; }
+.host-settings td { padding: 6px 10px; }
+.host-settings tr.changed td { color: #f2b705; }
+.host-settings tr.changed td:first-child { box-shadow: inset 3px 0 0 #f2b705; }

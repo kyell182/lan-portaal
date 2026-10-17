@@ -12,6 +12,7 @@ import { ScoreboardEditor } from './ScoreboardEditor.js';
 import { ScoreboardView } from '../../views/ScoreboardView.js';
 import { TournamentEditDialog } from './TournamentEditDialog.js';
 import { TournamentActions } from './TournamentActions.js';
+import { adminEventContext } from '../context.js';
 
 /** Beheer van één toernooi: deelnemers, start, uitslagen, volgende ronde en klassement. */
 export class TournamentDetailPage extends Page {
@@ -37,7 +38,7 @@ export class TournamentDetailPage extends Page {
     const id = this.params.id;
     const [tournament, standings, games, teams, players, formats] = await Promise.all([
       api.get(`/tournaments/${id}`), api.get(`/tournaments/${id}/standings`), api.get('/games'),
-      api.get('/teams'), api.get('/players'), api.get('/templates/formats'),
+      api.get('/teams'), api.get(`/players${adminEventContext.query()}`), api.get('/templates/formats'),
     ]);
     return { tournament, standings, games, teams, players, formats };
   }

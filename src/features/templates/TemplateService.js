@@ -35,6 +35,14 @@ class TemplateService extends CrudService {
     if (this.repository.count() > 0) return;
     defaultTemplates.forEach((template) => this.create(template));
   }
+
+  /** Voegt de standaardtemplates toe die nog niet (op naam) bestaan, ook op een bestaande installatie. */
+  seedMissing() {
+    const existing = new Set(this.repository.all().map((t) => t.name));
+    const missing = defaultTemplates.filter((template) => !existing.has(template.name));
+    missing.forEach((template) => this.create(template));
+    return missing.length;
+  }
 }
 
 module.exports = TemplateService;

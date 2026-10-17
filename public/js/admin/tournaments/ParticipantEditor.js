@@ -13,7 +13,7 @@ export class ParticipantEditor {
     this.list = tournament.participants.map((p) => ({ ...p }));
     this.source = tournament.participantType === 'team'
       ? teams.map((t) => ({ id: t.id, name: t.name }))
-      : players.map((p) => ({ id: p.id, name: p.nickname }));
+      : players.map((p) => ({ id: p.id, name: p.nickname, checkedIn: !!p.checkedIn }));
   }
 
   render() {
@@ -51,6 +51,7 @@ export class ParticipantEditor {
     const used = new Set(this.list.map((p) => p.refId).filter(Boolean));
     const available = this.source.filter((s) => !used.has(s.id));
     const select = h('select', { 'aria-label': `Kies uit ${kind}` }, h('option', { value: '' }, `Kies uit ${kind}`), available.map((s) => h('option', { value: s.id }, s.name)));
+    const present = available.filter((s) => s.checkedIn);
     const free = h('input', { placeholder: 'Of typ een naam', 'aria-label': 'Nieuwe deelnemer' });
     const add = () => {
       const ref = available.find((s) => s.id === select.value);
@@ -62,6 +63,7 @@ export class ParticipantEditor {
     return h('div', { class: 'actions', style: { marginTop: '16px' } },
       select, free,
       h('button', { class: 'btn', onclick: add }, 'Toevoegen'),
+      present.length ? h('button', { class: 'btn primary', onclick: () => { present.forEach((s) => this.list.push({ name: s.name, refId: s.id })); this.#changed(); } }, `Alle ${present.length} ingecheckte ${kind} toevoegen`) : null,
       available.length ? h('button', { class: 'btn', onclick: () => { available.forEach((s) => this.list.push({ name: s.name, refId: s.id })); this.#changed(); } }, `Alle ${available.length} ${kind} toevoegen`) : null,
       this.list.length > 1 ? h('button', { class: 'btn', onclick: () => this.#shuffle() }, 'Volgorde husselen') : null);
   }
