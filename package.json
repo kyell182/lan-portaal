@@ -9,6 +9,7 @@
     "dev": "node --watch src/server.js",
     "seed:preset": "node src/presets/seedPreset.js",
     "seed:demo": "node src/presets/seedDemo.js",
+    "demo:live": "node src/presets/runLiveDemo.js",
     "test": "node --test tests/*.test.js"
   },
   "engines": {

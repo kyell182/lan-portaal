@@ -270,7 +270,9 @@ DATA_DIR=./demo-data ADMIN_PASSWORD=geheim123 npm start
 ```
 
 ```powershell
-# Windows PowerShell (variabelen eerst zetten; ze gelden in dit venster tot je ze wist)
+# Windows PowerShell: ga eerst naar de projectmap (anders vindt npm geen package.json)
+cd "D:\prive projecten\lan-portaal"
+# variabelen eerst zetten; ze gelden in dit venster tot je ze wist
 $env:DATA_DIR = "./demo-data"
 npm run seed:demo -- 60 --played=2
 $env:ADMIN_PASSWORD = "geheim123"
@@ -282,6 +284,14 @@ Remove-Item Env:DATA_DIR, Env:ADMIN_PASSWORD, Env:JWT_SECRET   # daarna weer opr
 Draait de Docker-container nog op poort 3000, zet dan eerst `PORT=3001` (PowerShell: `$env:PORT = "3001"`) of stop de container met `docker compose down`.
 
 Opties: een getal = aantal spelers (standaard 60), `--played=N` = aantal gespeelde rondes (0 tot 5; bij 5 deelt de finale in op het klassement), `--preset=<id>`, `--force` = ook op een map met spelers. Open daarna `http://localhost:3000/#/klassement?tv=1` voor de tv-weergave.
+
+**Live laten bewegen:** met het portaal draaiend start je in een tweede venster (met dezelfde `cd`) dummy-spelers die ronde na ronde spelen, via dezelfde API als echte telefoons:
+
+```bash
+npm run demo:live -- --password=geheim123 --speed=0.5
+```
+
+De hosts sturen een uitslag in, de groepsleden drukken OK (soms Melden, dat de crew dan afhandelt), de ronde wordt gesloten en de volgende start vanzelf. Opties: `--speed=1` (0.5 = dubbel zo snel, 0 = zonder wachttijd), `--disputes=0.1` (kans op een melding), `--rounds=N`, `--url=...`. Kies je zelf een dummy-naam op `#/spelen`, dan slaat het script die speler over en wacht het op jou, zodat je zelf host of groepslid kan zijn.
 
 ---
 
