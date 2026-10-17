@@ -2,7 +2,9 @@ import { h } from '../core/dom.js';
 
 /** Zitplan per zone als raster van plaatsen. */
 export class SeatMapView {
-  constructor({ seats, players, onSeatClick }) {
+  /** @param mineId speler-id van de bezoeker (eigen plaats licht op) */
+  constructor({ seats, players, onSeatClick, mineId = null }) {
+    this.mineId = mineId;
     this.seats = seats;
     this.players = new Map(players.map((p) => [p.id, p]));
     this.onSeatClick = onSeatClick;
@@ -24,9 +26,10 @@ export class SeatMapView {
 
   #zone(zone, seats, extra) {
     const cols = Math.max(...seats.map((s) => s.col));
+    const tables = new Set(seats.map((s) => s.table).filter(Boolean)).size;
     const taken = seats.filter((s) => s.playerId).length;
     return h('section', { class: 'zone' },
-      h('div', { class: 'page-head' }, h('div', {}, h('h3', {}, zone), h('div', { class: 'muted' }, `${taken} van ${seats.length} plaatsen bezet`)), extra),
+      h('div', { class: 'page-head' }, h('div', {}, h('h3', {}, zone), h('div', { class: 'muted' }, `${taken} van ${seats.length} plaatsen bezet${tables ? `, ${tables} tafels` : ''}`)), extra),
       h('div', { class: 'seat-grid', style: { gridTemplateColumns: `repeat(${cols}, 92px)` } },
         seats.map((s) => this.#seat(s))));
   }
@@ -35,7 +38,7 @@ export class SeatMapView {
     const player = seat.playerId ? this.players.get(seat.playerId) : null;
     const clickable = !!this.onSeatClick;
     return h('div', {
-      class: `seat${player ? ' taken' : ''}${clickable ? ' clickable' : ''}`,
+      class: `seat${player ? ' taken' : ''}${seat.playerId && seat.playerId === this.mineId ? ' mine' : ''}${clickable ? ' clickable' : ''}`,
       style: { gridRow: seat.row, gridColumn: seat.col },
       tabindex: clickable ? 0 : null,
       role: clickable ? 'button' : null,

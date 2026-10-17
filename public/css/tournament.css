@@ -102,3 +102,6 @@
 .criteria-grid { display: grid; grid-template-columns: 1fr 110px 90px auto; gap: 8px 10px; align-items: center; margin: 12px 0; }
 .criteria-grid input { width: 100%; padding: 7px; }
 .score-input { width: 90px; padding: 6px 8px; text-align: right; }
+
+.seat.mine { box-shadow: inset 0 0 0 2px var(--cyan), 0 0 18px var(--cyan-glow); }
+.seat.mine .who { color: var(--cyan); }

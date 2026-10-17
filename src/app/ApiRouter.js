@@ -40,7 +40,7 @@ class ApiRouter {
     r.use('/players', new PlayerController(c.players, requireAdmin, c.playerImporter).router());
     r.use('/teams', new CrudController(c.teams, requireAdmin).router());
     r.use('/prizes', new CrudController(c.prizes, requireAdmin).router());
-    r.use('/seats', new SeatController(c.seats, requireAdmin).router());
+    r.use('/seats', new SeatController(c.seats, requireAdmin, c.authMiddleware.requirePlayer).router());
     r.use('/templates', new TemplateController(c.templates, requireAdmin, c.formats).router());
     r.use('/tournaments', new TournamentController(c.tournaments, requireAdmin).router());
     return r;

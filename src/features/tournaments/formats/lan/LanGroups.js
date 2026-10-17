@@ -1,8 +1,12 @@
 const HttpError = require('../../../../core/http/HttpError');
 const BalancedGroups = require('./BalancedGroups');
+const SeatSeparation = require('./SeatSeparation');
 const GroupMembers = require('./GroupMembers');
 const { ResultReview, MATCH_STATUS } = require('./ResultReview');
 
+const MIN_ATTEMPTS = 200;
+const ATTEMPTS_PER_PLAYER = 5;
+const MAX_ATTEMPTS = 20000;
 const ROOM_FIELDS = Object.freeze({ code: 60, link: 300, password: 60, note: 300 });
 
 /** Bewerkingen op de groepen in de state: genereren, host, roominfo, no-shows en beslissingen van de crew. */
@@ -18,11 +22,21 @@ class LanGroups {
     }
     const standingOrder = LanGroups.#standingOrder(settings, payload);
     const pids = participants.map((p) => p.id);
-    const lists = BalancedGroups.build({
+    const built = BalancedGroups.build({
       pids, maxGroupSize: settings.maxGroupSize, groupCount: settings.groupCount, seeding: settings.seeding, standingOrder, rng: this.rng,
     });
+    const { lists, conflicts } = this.#separated(built, settings, payload.seatsByPid);
     const avoid = new Set(payload.avoidHostPids || []);
-    return { ...state, groups: lists.map((list, i) => this.#newGroup(i + 1, list, settings.matchesPerGroup, avoid)) };
+    return { ...state, seatConflicts: conflicts, groups: lists.map((list, i) => this.#newGroup(i + 1, list, settings.matchesPerGroup, avoid)) };
+  }
+
+  /** Groepsleden niet naast of tegenover elkaar (alleen bij willekeurige indeling). conflicts = null als niet van toepassing. */
+  #separated(lists, settings, seatsByPid) {
+    const separation = new SeatSeparation(seatsByPid);
+    if (!settings.avoidScreenPeek || settings.seeding !== 'random' || !separation.hasSeats) return { lists, conflicts: null };
+    const attempts = Math.min(MAX_ATTEMPTS, MIN_ATTEMPTS + ATTEMPTS_PER_PLAYER * lists.flat().length);
+    const improved = separation.improve(lists, { rng: this.rng, attempts });
+    return { lists: improved, conflicts: separation.total(improved) };
   }
 
   setHost(group, pid) {

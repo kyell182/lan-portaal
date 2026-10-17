@@ -44,6 +44,7 @@ class LanRoundFormat extends TournamentFormat {
       { key: 'mode', label: 'Soort ronde', type: 'string', values: [MODE.GROUPS, MODE.ROOM], default: MODE.GROUPS },
       { key: 'maxGroupSize', label: 'Max. spelers per groep', type: 'integer', min: 2, max: 200, default: 8 },
       { key: 'groupCount', label: 'Aantal groepen (leeg = automatisch)', type: 'integer', min: 1, max: 1000 },
+      { key: 'avoidScreenPeek', label: 'Groepsleden niet naast/tegenover elkaar', type: 'boolean', default: true },
       { key: 'matchesPerGroup', label: 'Matches per groep', type: 'integer', min: 1, max: 3, default: 1 },
       { key: 'seeding', label: 'Indeling', type: 'string', values: ['random', 'standing'], default: 'random' },
       {
@@ -68,7 +69,7 @@ class LanRoundFormat extends TournamentFormat {
   /** Maakt een lege state: de crew controleert eerst de aanwezigen en genereert de groepen daarna. */
   create(participants, settings) {
     this.assertParticipants(participants);
-    return { mode: settings.mode, groups: [], room: RoomRound.newRoom(), closed: false, matches: [] };
+    return { mode: settings.mode, groups: [], seatConflicts: null, room: RoomRound.newRoom(), closed: false, matches: [] };
   }
 
   report(state, matchId, payload = {}, settings, participants) {

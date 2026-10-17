@@ -18,6 +18,7 @@ export class GroupsBoard {
     return h('div', {},
       state.closed ? h('p', { class: 'status finished' }, 'Deze ronde is gesloten') : null,
       this.#toolbar(),
+      this.#conflicts(),
       this.#disputes(),
       h('div', { class: 'board' }, COLUMNS.map((status) => this.#column(status))));
   }
@@ -31,6 +32,12 @@ export class GroupsBoard {
       state.closed
         ? h('button', { class: 'btn', onclick: () => this.#run('reopen', {}, 'Ronde heropend') }, 'Ronde heropenen')
         : h('button', { class: 'btn', disabled: !state.groups.length, onclick: () => this.#close() }, 'Ronde sluiten'));
+  }
+
+  #conflicts() {
+    const { seatConflicts } = this.t.state;
+    if (!seatConflicts) return null;
+    return h('p', { class: 'report' }, `${seatConflicts} ${seatConflicts === 1 ? 'koppel zit' : 'koppels zitten'} nog naast of tegenover elkaar. Wissel ter plaatse of genereer opnieuw.`);
   }
 
   #disputes() {

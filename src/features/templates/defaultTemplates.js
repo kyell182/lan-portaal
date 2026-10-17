@@ -82,7 +82,7 @@ module.exports = [
     formatKey: 'lan-round',
     participantType: 'player',
     description: 'Groepen op basis van het klassement (beste spelers samen), twee matches per groep.',
-    settings: { mode: 'groups', matchesPerGroup: 2, seeding: 'standing', maxGroupSize: 8 },
+    settings: { mode: 'groups', matchesPerGroup: 2, seeding: 'standing', maxGroupSize: 8, avoidScreenPeek: false },
   },
   {
     name: 'LAN Social bonus',

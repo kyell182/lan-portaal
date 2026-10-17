@@ -51,7 +51,7 @@ class Container {
       tournaments: this.tournaments.repository, players: this.players.repository, games: this.games.repository, formats: this.formats, currentEvent,
     });
     this.autoConfirmer = new AutoConfirmer(this.tournaments);
-    this.tournaments.usePlanning(new GroupPlanning(this.leaderboard, this.tournaments.repository));
+    this.tournaments.usePlanning(new GroupPlanning(this.leaderboard, this.tournaments.repository, this.seats.repository));
     this.rounds = new RoundService({ players: this.players, tournaments: this.tournaments, games: this.games, seats: this.seats, leaderboard: this.leaderboard });
 
     this.themes = new ThemeRegistry([

@@ -14,6 +14,7 @@ import { TournamentEditDialog } from './TournamentEditDialog.js';
 import { TournamentActions } from './TournamentActions.js';
 import { adminEventContext } from '../context.js';
 import { LanRoundAdmin } from './lan/LanRoundAdmin.js';
+import { SocialCheckPanel } from './SocialCheckPanel.js';
 
 const SCHEMA_TAB_LABEL = { scoreboard: 'Punten', 'lan-round': 'Groepen en uitslag' };
 
@@ -76,7 +77,7 @@ export class TournamentDetailPage extends Page {
       return this.editor.render();
     }
     if (this.tab === 'stand') return new StandingsView(standings).render();
-    if (t.formatKey === 'scoreboard' && t.state) return this.#scoreboard(t);
+    if (t.formatKey === 'scoreboard' && t.state) return this.#scoreboard(t, players);
     if (t.formatKey === 'lan-round') return new LanRoundAdmin(t, players, () => this.reload()).render();
     const names = new Map(t.participants.map((p) => [p.id, p.name]));
     this.view = new TournamentView(t, {
@@ -88,9 +89,9 @@ export class TournamentDetailPage extends Page {
       this.view.render());
   }
 
-  #scoreboard(t) {
+  #scoreboard(t, players) {
     this.editor = new ScoreboardEditor(t);
-    return h('div', {}, this.editor.render(), h('h3', {}, 'Criteria'), new ScoreboardView(t.state.criteria).render());
+    return h('div', {}, new SocialCheckPanel(t, players).render(), this.editor.render(), h('h3', {}, 'Criteria'), new ScoreboardView(t.state.criteria).render());
   }
 
   #tab(key, label) {

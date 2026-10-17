@@ -31,13 +31,14 @@ export class SeatsAdminPage extends Page {
   #createZone() {
     const form = new FormBuilder([
       { key: 'zone', label: 'Naam zone (bv. lokaal B.104)', required: true },
-      { key: 'rows', label: 'Rijen', type: 'number', min: 1, max: 50, required: true, default: 4 },
-      { key: 'cols', label: 'Plaatsen per rij', type: 'number', min: 1, max: 50, required: true, default: 6 },
+      { key: 'rows', label: 'Rijen (of aantal tafels als je plaatsen per tafel invult)', type: 'number', min: 1, max: 300, required: true, default: 4 },
+      { key: 'cols', label: 'Plaatsen per rij (leeg bij tafels)', type: 'number', min: 1, max: 100, default: 6 },
+      { key: 'tableSize', label: 'Plaatsen per tafel (leeg = gewoon raster; de helft aan elke kant, tegenover elkaar)', type: 'number', min: 2, max: 200 },
       { key: 'prefix', label: 'Voorvoegsel label (optioneel)' },
     ]);
     new Modal({
       title: 'Zone toevoegen',
-      body: h('div', {}, h('p', { class: 'muted' }, 'Plaatsen krijgen labels zoals A1, A2, B1...'), form.el),
+      body: h('div', {}, h('p', { class: 'muted' }, 'Plaatsen krijgen labels zoals A1, A2, B1... of bij tafels T1A1, T1B1... Spelers kunnen zelf een plaats kiezen op de publieke site.'), form.el),
       submitLabel: 'Zone aanmaken',
       onSubmit: async () => {
         await api.post('/seats/grid', { ...form.values(), eventId: adminEventContext.id });
