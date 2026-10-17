@@ -1,5 +1,7 @@
 import { api } from '../core/Api.js';
 import { Router } from '../core/Router.js';
+import { Brand } from '../core/Brand.js';
+import { SitePage } from './SitePage.js';
 import { Live } from '../core/Live.js';
 import { EventSwitcher } from '../views/EventSwitcher.js';
 import { startThemes } from '../themes/startThemes.js';
@@ -30,6 +32,7 @@ class AdminApp {
   }
 
   async start() {
+    new Brand(' beheer').start();
     this.logoutBtn.addEventListener('click', () => this.#logout());
     const { admin } = await api.get('/auth/me');
     if (admin) await this.#enter(admin);
@@ -61,6 +64,7 @@ class AdminApp {
       ['/spelers', CrudPage.for(playersResource)],
       ['/spelers/importeren', PlayerImportPage],
       ['/checkin', CheckInPage],
+      ['/site', SitePage],
       ['/plugins', PluginsPage],
       ['/admins', AdminsPage],
     ], adminEventContext.id ? '/toernooien' : '/events');

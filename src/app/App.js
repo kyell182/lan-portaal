@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
@@ -26,6 +27,7 @@ class App {
     app.use('/api', new ApiRouter(this.container).build());
     app.use('/api', (req, res, next) => next(HttpError.notFound('Onbekende API-route')));
 
+    app.get('/manifest.webmanifest', (req, res) => res.type('application/manifest+json').json(this.#manifest()));
     app.use('/custom-themes', express.static(this.container.config.customThemesDir));
     app.use('/custom-themes', (req, res, next) => next(HttpError.notFound('Onbekend themabestand')));
     app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
@@ -34,6 +36,13 @@ class App {
 
     app.use(errorHandler);
     return app;
+  }
+
+  /** Het manifest uit public/, met de merknaam van dit portaal. */
+  #manifest() {
+    const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC_DIR, 'manifest.webmanifest'), 'utf8'));
+    const title = this.container.site.title();
+    return { ...manifest, name: title, short_name: title, description: `Toernooien, zitplan en prijzen van ${title}` };
   }
 
   #helmet() {

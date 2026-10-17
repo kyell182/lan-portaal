@@ -14,6 +14,8 @@ class Config {
     this.jwtSecret = env.JWT_SECRET || this.#fallbackSecret();
     this.tokenTtl = '12h';
     this.publicUrl = env.PUBLIC_URL || '';
+    this.siteMark = env.SITE_MARK || 'VIVES';
+    this.siteName = env.SITE_NAME || 'LAN';
   }
 
   #fallbackSecret() {

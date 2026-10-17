@@ -12,6 +12,7 @@ const RoundService = require('../features/rounds/RoundService');
 const LeaderboardService = require('../features/leaderboard/LeaderboardService');
 const GroupPlanning = require('../features/leaderboard/GroupPlanning');
 const AutoConfirmer = require('../features/tournaments/AutoConfirmer');
+const SiteService = require('../features/site/SiteService');
 const TeamService = require('../features/teams/TeamService');
 const PrizeService = require('../features/prizes/PrizeService');
 const SeatService = require('../features/seats/SeatService');
@@ -35,6 +36,7 @@ class Container {
     this.admins = new AdminService(new Repository(this.store, 'admins'));
     this.auth = new AuthService(this.admins, config);
 
+    this.site = new SiteService(this.store, this.events, config);
     this.games = new GameService(this.store, this.events);
     this.players = new PlayerService(this.store, this.events);
     this.playerImporter = new PlayerImporter(this.players);

@@ -15,15 +15,15 @@ export class HomePage extends Page {
   }
 
   async load() {
-    const [tournaments, games] = await Promise.all([api.get(`/tournaments${eventContext.query()}`), api.get('/games')]);
-    return { tournaments, games, event: eventContext.current };
+    const [tournaments, games, site] = await Promise.all([api.get(`/tournaments${eventContext.query()}`), api.get('/games'), api.get('/site')]);
+    return { tournaments, games, site, event: eventContext.current };
   }
 
-  draw({ tournaments, games, event }) {
+  draw({ tournaments, games, site, event }) {
     this.countdown?.destroy();
     const running = tournaments.filter((t) => t.status === 'running').length;
     mount(this.container,
-      event ? this.#hero(event) : this.#noEvent(),
+      event ? this.#hero(event) : this.#noEvent(site),
       h('div', { class: 'section-title' },
         h('h2', {}, 'Toernooien'),
         running ? h('span', { class: 'status running' }, `${running} live`) : null),
@@ -46,9 +46,9 @@ export class HomePage extends Page {
       h('div', {}, this.countdown.render()));
   }
 
-  #noEvent() {
+  #noEvent(site) {
     return h('section', { class: 'hero' },
-      h('div', {}, h('h1', {}, 'VIVES LAN'), h('p', { class: 'tagline' }, 'De volgende LAN-party wordt binnenkort aangekondigd.')),
+      h('div', {}, h('h1', {}, `${site.mark} ${site.name}`), h('p', { class: 'tagline' }, 'De volgende LAN-party wordt binnenkort aangekondigd.')),
       h('div', {}));
   }
 }

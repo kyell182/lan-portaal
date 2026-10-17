@@ -7,6 +7,7 @@ const PlayerController = require('../features/players/PlayerController');
 const PlayerAuthController = require('../features/player-auth/PlayerAuthController');
 const RoundController = require('../features/rounds/RoundController');
 const LeaderboardController = require('../features/leaderboard/LeaderboardController');
+const SiteController = require('../features/site/SiteController');
 const SeatController = require('../features/seats/SeatController');
 const TemplateController = require('../features/templates/TemplateController');
 const TournamentController = require('../features/tournaments/TournamentController');
@@ -30,6 +31,7 @@ class ApiRouter {
     r.use('/player-auth', new PlayerAuthController(c.playerAuth, c.config).router());
     r.use('/rounds', new RoundController(c.rounds, c.authMiddleware.requirePlayer).router());
     r.use('/leaderboard', new LeaderboardController(c.leaderboard).router());
+    r.use('/site', new SiteController(c.site, requireAdmin).router());
     r.use('/admins', new AdminController(c.admins, requireAdmin).router());
     r.use('/plugins', new PluginController(c.plugins, requireAdmin).router());
     r.use('/themes', new ThemeController(c.themes).router());

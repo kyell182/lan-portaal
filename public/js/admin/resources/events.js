@@ -31,7 +31,7 @@ export const eventsResource = {
     adminEventContext.id === event.id ? null : h('button', { class: 'btn small', onclick: () => adminEventContext.select(event.id) }, 'Beheren'),
   ],
   fields: () => [
-    { key: 'name', label: 'Naam (bv. VIVES LAN Herfst 2026)', required: true },
+    { key: 'name', label: 'Naam (bv. Herfst LAN 2026)', required: true },
     { key: 'tagline', label: 'Slogan' },
     { key: 'startDate', label: 'Start', type: 'datetime-local' },
     { key: 'endDate', label: 'Einde', type: 'datetime-local' },

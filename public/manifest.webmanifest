@@ -1,7 +1,7 @@
 {
   "name": "VIVES LAN",
   "short_name": "VIVES LAN",
-  "description": "Toernooien, zitplan en prijzen van de VIVES LAN-party",
+  "description": "Toernooien, zitplan en prijzen van de LAN-party",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b0e1c",

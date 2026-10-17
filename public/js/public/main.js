@@ -1,4 +1,5 @@
 import { Router } from '../core/Router.js';
+import { Brand } from '../core/Brand.js';
 import { Live } from '../core/Live.js';
 import { EventSwitcher } from '../views/EventSwitcher.js';
 import { startThemes } from '../themes/startThemes.js';
@@ -14,6 +15,7 @@ import { PlayPage } from './play/PlayPage.js';
 /** Publieke app: event in de kijker, toernooien, zitplan en prijzen, live bijgewerkt. */
 class PublicApp {
   async start() {
+    new Brand().start();
     await eventContext.init();
 
     this.router = new Router(document.getElementById('app'), [

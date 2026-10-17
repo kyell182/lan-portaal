@@ -1,6 +1,6 @@
 <div align="center">
 
-# VIVES LAN-portaal
+# LAN-portaal
 
 **Brackets, klassementen, zitplan en prijzen: alles live op je beamer.**
 
@@ -82,6 +82,7 @@ Het eerste admin-account komt uit `.env`. Je beheert admins daarna onder **Behee
 | `DATA_DIR` | Map waar de JSON-data staat |
 | `COOKIE_SECURE` | `true` als het portaal achter HTTPS draait |
 | `PUBLIC_URL` | Publiek adres, voor links in Discord-berichten (optioneel) |
+| `SITE_MARK` / `SITE_NAME` | Standaard merknaam in de topbalk (standaard `VIVES` en `LAN`). In de admin onder **Site** pas je ze aan |
 | `THEMES_DIR` | Map met eigen thema's (standaard `./custom-themes`; in Docker al gekoppeld) |
 
 > Achter een reverse proxy met HTTPS: zet `COOKIE_SECURE=true` en laat de proxy `/api/live`
