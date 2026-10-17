@@ -8,6 +8,7 @@ import { TournamentListPage } from './TournamentListPage.js';
 import { TournamentPage } from './TournamentPage.js';
 import { SeatsPage } from './SeatsPage.js';
 import { PrizesPage } from './PrizesPage.js';
+import { PlayPage } from './play/PlayPage.js';
 
 /** Publieke app: event in de kijker, toernooien, zitplan en prijzen, live bijgewerkt. */
 class PublicApp {
@@ -20,6 +21,7 @@ class PublicApp {
       ['/toernooien/:id', TournamentPage],
       ['/zitplan', SeatsPage],
       ['/prijzen', PrizesPage],
+      ['/spelen', PlayPage],
     ], '/');
 
     const switcher = new EventSwitcher(eventContext, { label: 'Andere LAN-editie bekijken' });
@@ -28,9 +30,9 @@ class PublicApp {
     startThemes(eventContext, document.getElementById('theme-switch'));
 
     this.live = new Live(document.getElementById('live'));
-    this.live.subscribe(async (entities) => {
+    this.live.subscribe(async (entities, changes) => {
       if (entities.has('events')) await eventContext.reload();
-      this.router.refresh(entities);
+      this.router.refresh(entities, changes);
     });
     document.addEventListener('route', (e) => this.#markNav(e.detail));
 

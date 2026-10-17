@@ -24,6 +24,7 @@ export class Page {
     }
   }
 
+  /** changes: de ruwe live-meldingen ({ entity, id }); pagina's mogen daarop filteren. */
   refresh(entities) {
     if (this.watches.some((e) => entities.has(e))) this.reload();
   }

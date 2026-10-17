@@ -1,0 +1,26 @@
+/* "Mijn ronde": gamertag kiezen, groep, room en uitslag. Telefoon eerst. */
+.claim-list { display: grid; gap: 8px; }
+.claim-item { justify-content: flex-start; text-align: left; padding: 14px 16px; font-size: 1.05rem; }
+.player-label small { font-size: .78em; }
+
+.member-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.member-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.host-badge { margin-left: 8px; }
+
+.room-info { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+.room-info dt { color: var(--muted); }
+.room-info dd { margin: 0; font-weight: 600; word-break: break-all; }
+
+.result-card .status.confirmed { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.result-card .status.disputed { background: var(--vives-soft); color: var(--danger-text); }
+.result-order { margin: 12px 0; padding-left: 24px; display: grid; gap: 4px; }
+.report { color: var(--danger-text); margin: 6px 0; }
+
+.order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin: 12px 0; }
+.order-item { justify-content: flex-start; gap: 10px; padding: 12px; }
+.order-item.picked { box-shadow: inset 0 0 0 2px var(--cyan); }
+.order-place { min-width: 1.6em; font: 700 1.1rem var(--font-display); color: var(--cyan); }
+
+.check-buttons { margin-top: 12px; }
+.btn.big { flex: 1 1 140px; padding: 18px 16px; font-size: 1.15rem; }
+.btn.big.chosen { box-shadow: inset 0 0 0 3px var(--text); }

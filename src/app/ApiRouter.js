@@ -4,6 +4,8 @@ const LiveController = require('../core/events/LiveController');
 const AuthController = require('../features/auth/AuthController');
 const AdminController = require('../features/admins/AdminController');
 const PlayerController = require('../features/players/PlayerController');
+const PlayerAuthController = require('../features/player-auth/PlayerAuthController');
+const RoundController = require('../features/rounds/RoundController');
 const SeatController = require('../features/seats/SeatController');
 const TemplateController = require('../features/templates/TemplateController');
 const TournamentController = require('../features/tournaments/TournamentController');
@@ -24,6 +26,8 @@ class ApiRouter {
 
     r.get('/health', (req, res) => res.json({ ok: true }));
     r.use('/auth', new AuthController(c.auth, c.config).router());
+    r.use('/player-auth', new PlayerAuthController(c.playerAuth, c.config).router());
+    r.use('/rounds', new RoundController(c.rounds, c.authMiddleware.requirePlayer).router());
     r.use('/admins', new AdminController(c.admins, requireAdmin).router());
     r.use('/plugins', new PluginController(c.plugins, requireAdmin).router());
     r.use('/themes', new ThemeController(c.themes).router());

@@ -1,8 +1,10 @@
-/** Luistert naar /api/live en roept subscribers op bij wijzigingen (gebundeld per 300 ms). */
+/** Luistert naar /api/live en roept subscribers op bij wijzigingen (gebundeld per 300 ms).
+ * Luisteraars krijgen de entiteiten en de ruwe meldingen ({ entity, id }), zodat een pagina kan filteren op id. */
 export class Live {
   #listeners = new Set();
   #timer = null;
   #pending = new Set();
+  #changes = [];
 
   constructor(indicator) {
     this.indicator = indicator;
@@ -22,11 +24,14 @@ export class Live {
 
   #queue(payload) {
     this.#pending.add(payload.entity);
+    this.#changes.push(payload);
     clearTimeout(this.#timer);
     this.#timer = setTimeout(() => {
       const entities = new Set(this.#pending);
+      const changes = this.#changes;
       this.#pending.clear();
-      this.#listeners.forEach((fn) => fn(entities));
+      this.#changes = [];
+      this.#listeners.forEach((fn) => fn(entities, changes));
     }, 300);
   }
 }

@@ -16,8 +16,8 @@ export class Router {
   }
 
   /** Laat de actieve pagina zichzelf vernieuwen na een live-update. */
-  refresh(entities) {
-    this.current?.refresh?.(entities);
+  refresh(entities, changes = []) {
+    this.current?.refresh?.(entities, changes);
   }
 
   /** Actieve pagina volledig herladen (bv. na het wisselen van event). */

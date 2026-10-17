@@ -7,6 +7,8 @@ const AuthMiddleware = require('../features/auth/AuthMiddleware');
 const GameService = require('../features/games/GameService');
 const PlayerService = require('../features/players/PlayerService');
 const PlayerImporter = require('../features/players/PlayerImporter');
+const PlayerAuthService = require('../features/player-auth/PlayerAuthService');
+const RoundService = require('../features/rounds/RoundService');
 const TeamService = require('../features/teams/TeamService');
 const PrizeService = require('../features/prizes/PrizeService');
 const SeatService = require('../features/seats/SeatService');
@@ -29,16 +31,19 @@ class Container {
 
     this.admins = new AdminService(new Repository(this.store, 'admins'));
     this.auth = new AuthService(this.admins, config);
-    this.authMiddleware = new AuthMiddleware(this.auth);
 
     this.games = new GameService(this.store, this.events);
     this.players = new PlayerService(this.store, this.events);
     this.playerImporter = new PlayerImporter(this.players);
+    this.playerAuth = new PlayerAuthService(this.players, config);
+    this.authMiddleware = new AuthMiddleware(this.auth, this.playerAuth);
     this.teams = new TeamService(this.store, this.events, this.players.repository);
     this.prizes = new PrizeService(this.store, this.events);
     this.seats = new SeatService(this.store, this.events, this.players.repository);
     this.templates = new TemplateService(this.store, this.events, this.formats);
     this.tournaments = new TournamentService(this.store, this.events, this.formats, this.templates, this.games.repository);
+
+    this.rounds = new RoundService({ players: this.players, tournaments: this.tournaments, games: this.games, seats: this.seats });
 
     this.themes = new ThemeRegistry([
       { dir: config.builtInThemesDir, urlBase: '/themes' },
