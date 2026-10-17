@@ -17,6 +17,7 @@ export class PlayPage extends Page {
 
   draw({ player, available, me }) {
     this.tournamentId = me?.round?.tournamentId ?? null;
+    this.roundClosed = !!me?.round?.closed;
     if (!player) {
       this.claimView ??= new ClaimView((id) => this.#claim(id));
       mount(this.container, this.claimView.render(available));
@@ -26,14 +27,15 @@ export class PlayPage extends Page {
     mount(this.container, new MyRoundView(me, (call) => this.#run(call)).render());
   }
 
-  /** 70 telefoons mogen niet bij elke wijziging herladen: enkel als het hun eigen toernooi is. */
+  /** 70 telefoons mogen niet bij elke wijziging herladen: enkel als het hun eigen toernooi is, of als hun ronde afgelopen is (dan kan de volgende starten). */
   refresh(entities, changes = []) {
     if (this.#affectsMe(entities, changes)) this.reload();
   }
 
   #affectsMe(entities, changes) {
     if (['players', 'seats', 'games'].some((entity) => entities.has(entity))) return true;
-    return changes.some((c) => c.entity === 'tournaments' && (!this.tournamentId || !c.id || c.id === this.tournamentId));
+    const mine = (c) => !this.tournamentId || this.roundClosed || !c.id || c.id === this.tournamentId;
+    return changes.some((c) => c.entity === 'tournaments' && mine(c));
   }
 
   async #claim(playerId) {

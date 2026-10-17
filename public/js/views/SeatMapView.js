@@ -30,7 +30,7 @@ export class SeatMapView {
     const taken = seats.filter((s) => s.playerId).length;
     return h('section', { class: 'zone' },
       h('div', { class: 'page-head' }, h('div', {}, h('h3', {}, zone), h('div', { class: 'muted' }, `${taken} van ${seats.length} plaatsen bezet${tables ? `, ${tables} tafels` : ''}`)), extra),
-      h('div', { class: 'seat-grid', style: { gridTemplateColumns: `repeat(${cols}, 92px)` } },
+      h('div', { class: 'seat-grid', style: { gridTemplateColumns: `repeat(${cols}, minmax(72px, 92px))` } },
         seats.map((s) => this.#seat(s))));
   }
 

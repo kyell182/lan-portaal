@@ -1,4 +1,4 @@
-import { h } from '../../core/dom.js';
+import { h, formatDate } from '../../core/dom.js';
 import { playerLabel } from '../../views/playerLabel.js';
 import { ResultCard } from './ResultCard.js';
 import { RoomPanel } from './RoomPanel.js';
@@ -61,7 +61,7 @@ export class MyRoundView {
 
   #head() {
     const { round } = this;
-    const sub = [round.game?.name, round.startTime].filter(Boolean).join(' · ');
+    const sub = [round.game?.name, round.startTime ? formatDate(round.startTime) : null].filter(Boolean).join(' · ');
     return h('div', { class: 'page-head' },
       h('div', {}, h('h1', {}, round.roundNo ? `Ronde ${round.roundNo}` : round.name), h('div', { class: 'meta' }, sub || round.name)),
       h('div', {}, playerLabel(this.me.player)));
