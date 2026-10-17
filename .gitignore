@@ -1,8 +1,9 @@
 # Dependencies
 node_modules
 
-# Runtime-data (JSON-opslag van het portaal)
+# Runtime-data (JSON-opslag van het portaal) en dummy-data om uit te proberen
 data
+demo-data
 
 # Geheimen
 .env
