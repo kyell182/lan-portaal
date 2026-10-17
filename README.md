@@ -254,7 +254,7 @@ Alles kan in de admin, maar voor een vast programma is er een optionele **preset
 ```bash
 npm run seed:preset                          # toont de beschikbare presets
 npm run seed:preset -- ieee-halloween-2026   # laadt een preset
-docker compose exec app node src/presets/seedPreset.js ieee-halloween-2026
+docker compose exec lan-portaal node src/presets/seedPreset.js ieee-halloween-2026
 ```
 
 Het is veilig om opnieuw te draaien: wat al bestaat blijft ongemoeid. Een eigen preset maak je als map in `src/presets/` en registreer je in `src/presets/index.js`.

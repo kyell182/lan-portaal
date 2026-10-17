@@ -5,7 +5,7 @@ const presets = require('./index');
 
 /**
  * Richt een LAN in met een preset (veilig om meerdere keren te draaien).
- * Lokaal: npm run seed:preset -- <id>. In Docker: docker compose exec app node src/presets/seedPreset.js <id>
+ * Lokaal: npm run seed:preset -- <id>. In Docker: docker compose exec lan-portaal node src/presets/seedPreset.js <id>
  * Zonder id toont het de beschikbare presets. Dit is optioneel: een LAN kan ook volledig in de admin ingericht worden.
  */
 function main() {
