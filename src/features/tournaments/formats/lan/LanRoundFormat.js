@@ -129,7 +129,7 @@ class LanRoundFormat extends TournamentFormat {
   }
 
   #review(action, match, group, payload, by, now) {
-    if (action === ACTION.SUBMIT) return ResultReview.submit(match, group, payload.order, by, now);
+    if (action === ACTION.SUBMIT) return ResultReview.submit(match, group, payload, by, now);
     if (action === ACTION.CONFIRM) {
       return by === CREW ? ResultReview.confirmByCrew(match, now) : ResultReview.check(match, group, by, CHECK.OK, '', now);
     }

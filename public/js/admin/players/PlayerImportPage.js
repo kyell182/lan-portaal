@@ -4,6 +4,7 @@ import { Page } from '../../core/Page.js';
 import { Toast } from '../../core/Toast.js';
 import { adminEventContext } from '../context.js';
 import { CsvParser } from './CsvParser.js';
+import { XlsxReader } from './XlsxReader.js';
 import { IMPORT_FIELDS } from './ImportFields.js';
 import { ColumnMapping } from './ColumnMapping.js';
 import { ImportRowChecker } from './ImportRowChecker.js';
@@ -29,8 +30,8 @@ export class PlayerImportPage extends Page {
   #renderStart() {
     mount(this.container,
       this.#head(),
-      h('label', { class: 'field' }, h('span', {}, 'CSV-bestand (Excel: Opslaan als, CSV UTF-8)'),
-        h('input', { type: 'file', accept: '.csv,text/csv', onchange: (e) => this.#readFile(e.target.files[0]) })));
+      h('label', { class: 'field' }, h('span', {}, 'Excel- of CSV-bestand (.xlsx of .csv, bv. de export van Microsoft Forms)'),
+        h('input', { type: 'file', accept: '.xlsx,.csv,text/csv', onchange: (e) => this.#readFile(e.target.files[0]) })));
   }
 
   #head() {
@@ -42,11 +43,22 @@ export class PlayerImportPage extends Page {
 
   async #readFile(file) {
     if (!file) return;
-    const rows = CsvParser.parse(await file.text());
+    const rows = await PlayerImportPage.#parse(file);
+    if (!rows) return null;
     if (rows.length < 2) return Toast.show('Het bestand bevat geen gegevensrijen', { error: true });
     [this.headers, ...this.dataRows] = rows;
     this.mapping = ColumnMapping.suggest(this.headers);
     return this.#renderMapping();
+  }
+
+  /** .xlsx en .csv geven allebei rijen van tekstcellen terug. Bij een fout geeft dit null terug na een melding. */
+  static async #parse(file) {
+    try {
+      return /\.xlsx$/i.test(file.name) ? await XlsxReader.read(await file.arrayBuffer()) : CsvParser.parse(await file.text());
+    } catch (err) {
+      Toast.show(err.message, { error: true });
+      return null;
+    }
   }
 
   #renderMapping() {

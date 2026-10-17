@@ -24,7 +24,7 @@ Alleen admins melden aan; het publiek ziet alles live bijwerken. Handig op een b
 | Onderdeel | Omschrijving |
 |---|---|
 | **Toernooien** | Knock-out, double elimination, competitie, poules, Swiss, puntentoernooi, scorebord en LAN-rondes (groepen of zaal) |
-| **Check-in en import** | Spelers importeren uit een CSV (bv. Microsoft Forms), inchecken aan de deur, namen vrijgeven |
+| **Check-in en import** | Spelers importeren uit een `.xlsx` of `.csv` (bv. de export van Microsoft Forms, zonder externe bibliotheek), inchecken aan de deur, namen vrijgeven |
 | **Mijn ronde** | Spelers kiezen hun gamertag (zonder wachtwoord) en zien groep, host, room en uitslag op hun telefoon |
 | **Klassement** | Algemeen klassement over alle rondes, met een tv-weergave (`#/klassement?tv=1`) |
 | **Live** | Elke uitslag verschijnt meteen bij iedereen (Server-Sent Events) |
@@ -226,6 +226,7 @@ Voor een avond met meerdere korte rondes waarin iedereen meespeelt. Eén ronde =
 | Punten | Groepen: tabel per groepsgrootte (`pointsBySize`). Zaal: rangbanden (`rankBands`). Bij twee matches telt de som van de plaatsen |
 | Voorlopig | Punten tellen mee zodra de uitslag is ingestuurd, maar zijn voorlopig tot de bevestiging |
 | Anti screen-peek | Groepsleden zitten bij voorkeur niet naast of tegenover elkaar (vereist tafels in het zitplan) |
+| Bewijs | De host kan bij een uitslag een link naar een screenshot meegeven; het portaal slaat zelf geen bestanden op |
 | No-shows | Een afwezige speler verwijder je uit de groep, zonder herschudden |
 | Plan B | Werkt een zaalronde niet, dan zet de crew ze om naar groepen |
 | Klassement | Het algemeen klassement telt alle rondes met *Telt mee in algemeen klassement*, plus de scoreboard-toernooien van het event als bonus |

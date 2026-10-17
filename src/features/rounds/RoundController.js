@@ -17,7 +17,7 @@ class RoundController {
     r.put('/me/game-name', json((id, req) => this.rounds.setGameName(id, req.body.name)));
     r.put('/me/room', json((id, req) => this.rounds.setRoom(id, req.body)));
     r.post('/me/room/report', json((id, req) => this.rounds.reportRoomPlace(id, req.body.reason)));
-    r.post('/me/matches/:no/result', json((id, req) => this.rounds.submitResult(id, req.params.no, req.body.order)));
+    r.post('/me/matches/:no/result', json((id, req) => this.rounds.submitResult(id, req.params.no, req.body)));
     r.post('/me/matches/:no/confirm', json((id, req) => this.rounds.confirm(id, req.params.no)));
     r.post('/me/matches/:no/dispute', json((id, req) => this.rounds.dispute(id, req.params.no, req.body.reason)));
     return r;

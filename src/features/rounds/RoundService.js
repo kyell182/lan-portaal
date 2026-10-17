@@ -23,8 +23,8 @@ class RoundService {
     return { ...presented, overall: this.leaderboard.rankOf(player.eventId, playerId) };
   }
 
-  submitResult(playerId, matchNo, order) {
-    return this.#act(playerId, (group, pid) => [`submit:${group.id}:${matchNo}`, { by: pid, order }]);
+  submitResult(playerId, matchNo, { order, proofUrl }) {
+    return this.#act(playerId, (group, pid) => [`submit:${group.id}:${matchNo}`, { by: pid, order, proofUrl }]);
   }
 
   confirm(playerId, matchNo) {

@@ -212,3 +212,17 @@ test('autoconfirm is een crew-actie en OK van de helft blijft de timer niet in d
   t.act('confirm:g1:1', { by: t.others()[0] });
   assert.strictEqual(format.autoConfirmDue(t.state, t.settings, Date.parse(t.match().submittedAt) + 31000), true);
 });
+
+test('bewijslink: optioneel, enkel http(s), en een nieuwe inzending vervangt ze', () => {
+  const t = setup(4);
+  const host = t.group().hostPid;
+  assert.strictEqual(t.match().proofUrl, null);
+  t.act('submit:g1:1', { by: host, order: t.group().pids, proofUrl: ' https://voorbeeld.be/foto.png ' });
+  assert.strictEqual(t.match().proofUrl, 'https://voorbeeld.be/foto.png');
+  for (const bad of ['javascript:alert(1)', 'ftp://x.be/a', 'https://met spatie.be', `https://x.be/${'a'.repeat(300)}`]) {
+    assert.throws(() => t.act('submit:g1:1', { by: host, order: t.group().pids, proofUrl: bad }), /bewijslink/, bad);
+  }
+  assert.strictEqual(t.match().proofUrl, 'https://voorbeeld.be/foto.png');
+  t.act('submit:g1:1', { by: host, order: t.group().pids });
+  assert.strictEqual(t.match().proofUrl, null);
+});

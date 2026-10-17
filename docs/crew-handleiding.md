@@ -16,7 +16,7 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
 | Rondes | Per ronde een toernooi met het template *LAN Groepsronde*, *Groepsronde (2 matches)*, *Zaalronde* of *Finale op stand*. Vul **ronde-nummer**, **starttijd** en **Telt mee in algemeen klassement** in |
 | Social bonus | Een toernooi met het template *LAN Social bonus*; dat telt niet als ronde maar tikt wel mee in het klassement |
 | Zitplan | Beheer → Zitplan → Zone toevoegen. Vul **plaatsen per tafel** in voor tafels met twee kanten. Spelers kiezen zelf hun plaats |
-| Spelers | Spelers → Importeren (CSV; in Excel *Opslaan als → CSV UTF-8*). Controleer de voorbeeldtabel: dubbele of ongeldige gamertags los je daar op |
+| Spelers | Spelers → Importeren (de `.xlsx` van Microsoft Forms kan rechtstreeks, of een `.csv`). Controleer de voorbeeldtabel: dubbele of ongeldige gamertags los je daar op |
 | Testen | Test elke game vooraf. De checklist per game staat in de admin (veld *Testen voor de start*) |
 | Back-up | Kopieer de map `data/` na elke ronde |
 
@@ -33,7 +33,7 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
 2. **Toernooi starten**. Vink geen willekeurige seeding aan; die heeft hier geen effect.
 3. Tab **Groepen en uitslag** → **Genereer groepen**. Elke groep krijgt een host. Staat er een melding over koppels die nog naast elkaar zitten, wissel dan ter plaatse of genereer opnieuw (kan zolang er geen uitslag is).
 4. Spelers zien onder **Mijn ronde** hun groep, de host, hun plaats en de roominfo. De host ziet zijn **host-kaart**.
-5. De host maakt de room, vult de roominfo in en stuurt na afloop de volgorde in (tikken van 1e naar laatste).
+5. De host maakt de room, vult de roominfo in en stuurt na afloop de volgorde in (tikken van 1e naar laatste), eventueel met een link naar een screenshot als bewijs.
 6. De anderen drukken **OK** of **Melden**. Alles OK = bevestigd. Zonder melding bevestigt de uitslag vanzelf na de ingestelde tijd (standaard 3 minuten).
 7. Op het bord staan vier kolommen: **Open, Ingestuurd, Bevestigd, Betwist**. Klik een groep open om:
    - de uitslag zelf in te voeren of te corrigeren (dat bevestigt meteen),

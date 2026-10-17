@@ -23,6 +23,7 @@ export class GroupMatchSection {
       h('h3', {}, `Match ${match.no} `, h('span', { class: `status ${match.status}` }, MATCH_STATUS_LABEL[match.status])),
       match.confirmedBy ? h('p', { class: 'muted' }, `Bevestigd door ${CONFIRMED_BY_LABEL[match.confirmedBy]}.`) : null,
       match.order.length ? this.#order() : null,
+      this.#proof(),
       match.status === 'open' ? null : this.#checks(),
       this.#confirmButton(),
       h('h4', {}, match.status === 'open' ? 'Uitslag invoeren als crew' : 'Uitslag corrigeren als crew'),
@@ -32,6 +33,11 @@ export class GroupMatchSection {
 
   #order() {
     return h('ol', { class: 'result-order' }, this.match.order.map((pid) => h('li', {}, playerLabel(this.roster.member(pid)))));
+  }
+
+  #proof() {
+    if (!this.match.proofUrl) return null;
+    return h('p', {}, 'Bewijs van de host: ', h('a', { href: this.match.proofUrl, target: '_blank', rel: 'noopener noreferrer' }, this.match.proofUrl));
   }
 
   #checks() {

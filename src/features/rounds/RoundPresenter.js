@@ -79,6 +79,7 @@ class RoundPresenter {
       status: match.status,
       confirmedBy: match.confirmedBy,
       order: match.order,
+      proofUrl: match.proofUrl ?? null,
       myCheck: match.checks[myPid] ?? null,
       canCheck: reviewers.includes(myPid),
       checkedCount: reviewers.filter((pid) => match.checks[pid]).length,

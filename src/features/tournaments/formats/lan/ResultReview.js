@@ -7,6 +7,7 @@ const CHECK = Object.freeze({ OK: 'ok', REPORT: 'report' });
 /** Wie handelt: een speler-id, of de crew (admin). */
 const CREW = 'crew';
 const MAX_REASON_LENGTH = 200;
+const MAX_PROOF_LENGTH = 300;
 
 /**
  * Statusmachine van één groepsmatch (dubbele beveiliging):
@@ -15,16 +16,19 @@ const MAX_REASON_LENGTH = 200;
  */
 class ResultReview {
   static newMatch(no) {
-    return { no, status: MATCH_STATUS.OPEN, order: [], submittedBy: null, submittedAt: null, checks: {}, reports: [], confirmedBy: null, log: [] };
+    return { no, status: MATCH_STATUS.OPEN, order: [], submittedBy: null, submittedAt: null, proofUrl: null, checks: {}, reports: [], confirmedBy: null, log: [] };
   }
 
-  /** De host (of de crew) stuurt de volgorde in. Dat wist alle eerdere OK's en meldingen. */
-  static submit(match, group, order, by, now) {
+  /**
+   * De host (of de crew) stuurt de volgorde in, optioneel met een bewijslink (bv. een link naar een screenshot).
+   * Dat wist alle eerdere OK's en meldingen.
+   */
+  static submit(match, group, { order, proofUrl }, by, now) {
     if (by !== CREW && by !== group.hostPid) throw HttpError.forbidden('Enkel de host of de crew kan de uitslag insturen');
     if (match.status === MATCH_STATUS.CONFIRMED && by !== CREW) {
       throw HttpError.conflict('Deze uitslag is al bevestigd; vraag de crew om te corrigeren');
     }
-    Object.assign(match, { order: ResultReview.#cleanOrder(order, group), submittedBy: by, submittedAt: now, checks: {}, reports: [], confirmedBy: null, status: MATCH_STATUS.SUBMITTED });
+    Object.assign(match, { order: ResultReview.#cleanOrder(order, group), proofUrl: ResultReview.#cleanProof(proofUrl), submittedBy: by, submittedAt: now, checks: {}, reports: [], confirmedBy: null, status: MATCH_STATUS.SUBMITTED });
     ResultReview.#log(match, by, 'submit', now);
     if (by === CREW) ResultReview.#confirm(match, CONFIRMED_BY.CREW);
     else ResultReview.evaluate(match, group);
@@ -83,6 +87,16 @@ class ResultReview {
 
   static #confirm(match, confirmedBy) {
     Object.assign(match, { status: MATCH_STATUS.CONFIRMED, confirmedBy });
+  }
+
+  /** Enkel gewone web-links; het portaal bewaart geen bestanden. */
+  static #cleanProof(raw) {
+    const url = String(raw ?? '').trim();
+    if (!url) return null;
+    if (url.length > MAX_PROOF_LENGTH || !/^https?:\/\/\S+$/i.test(url)) {
+      throw HttpError.badRequest('De bewijslink moet een http(s)-link zijn van maximaal 300 tekens');
+    }
+    return url;
   }
 
   static #cleanOrder(order, group) {

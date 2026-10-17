@@ -162,3 +162,20 @@ test('AutoConfirmer bevestigt na de ingestelde tijd en meldt dat aan de speler',
     assert.strictEqual(s.c.autoConfirmer.sweep(Date.now() + 999000), 0);
   } finally { s.close(); }
 });
+
+test('de bewijslink van de host is zichtbaar voor de groep', async () => {
+  const s = await scenario();
+  try {
+    const { group } = groupOf(s.c, s.tournament.id, s.players[0]);
+    const members = s.players.filter((p) => group.pids.includes(groupOf(s.c, s.tournament.id, p).pid));
+    const host = members.find((p) => groupOf(s.c, s.tournament.id, p).pid === group.hostPid);
+    const other = members.find((p) => p !== host);
+    const hostCookie = (await s.claim(host)).cookie;
+    const otherCookie = (await s.claim(other)).cookie;
+    const sent = await s.call('POST', '/rounds/me/matches/1/result', { cookie: hostCookie, body: { order: group.pids, proofUrl: 'https://x.be/a.png' } });
+    assert.strictEqual(sent.json.round.matches[0].proofUrl, 'https://x.be/a.png');
+    assert.strictEqual((await s.call('GET', '/rounds/me', { cookie: otherCookie })).json.round.matches[0].proofUrl, 'https://x.be/a.png');
+    const bad = await s.call('POST', '/rounds/me/matches/1/result', { cookie: hostCookie, body: { order: group.pids, proofUrl: 'javascript:alert(1)' } });
+    assert.strictEqual(bad.status, 400);
+  } finally { s.close(); }
+});

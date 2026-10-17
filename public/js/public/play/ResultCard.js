@@ -4,6 +4,7 @@ import { OrderPicker } from '../../views/OrderPicker.js';
 
 const STATUS_LABEL = { open: 'Wacht op uitslag', submitted: 'Ingestuurd, wacht op controle', confirmed: 'Bevestigd', disputed: 'Betwist' };
 const EDITABLE = new Set(['open', 'submitted', 'disputed']);
+const proofDrafts = new Map();
 
 /** Eén match van mijn groep: de host stuurt de volgorde in, de anderen drukken OK of Melden. */
 export class ResultCard {
@@ -20,6 +21,7 @@ export class ResultCard {
     return h('section', { class: 'panel result-card' },
       h('div', { class: 'page-head' }, h('h3', {}, `Match ${match.no}`), h('span', { class: `status ${match.status}` }, STATUS_LABEL[match.status])),
       match.order.length ? this.#order() : null,
+      this.#proofLink(),
       this.round.iAmHost ? this.#hostPart() : this.#playerPart());
   }
 
@@ -33,7 +35,7 @@ export class ResultCard {
       match.status === 'open' ? null : this.#progress(),
       ...match.reports.map((r) => h('p', { class: 'report' }, `Melding van ${this.members.get(r.pid)?.nickname ?? '?'}: ${r.reason || 'geen reden opgegeven'}`)),
       EDITABLE.has(match.status) && !this.round.closed
-        ? new OrderPicker(this.round.group.members, this.#pickerOptions()).el
+        ? h('div', {}, this.#proofInput(), new OrderPicker(this.round.group.members, this.#pickerOptions()).el)
         : null);
   }
 
@@ -57,6 +59,22 @@ export class ResultCard {
       h('button', { class: `btn danger big${match.myCheck === 'report' ? ' chosen' : ''}`, type: 'button', onclick: () => this.#dispute() }, 'Melden, fout'));
   }
 
+  /** Optionele link naar een screenshot als bewijs; het portaal slaat zelf geen bestanden op. */
+  #proofInput() {
+    const key = `${this.round.tournamentId}:${this.match.no}`;
+    const input = h('input', {
+      type: 'url', placeholder: 'https://...', value: proofDrafts.get(key) ?? this.match.proofUrl ?? '', 'aria-label': 'Screenshot-link',
+      oninput: (e) => proofDrafts.set(key, e.target.value),
+    });
+    return h('label', { class: 'field' }, h('span', {}, 'Screenshot-link (optioneel)'), input);
+  }
+
+  #proofLink() {
+    const url = this.match.proofUrl;
+    if (!url) return null;
+    return h('p', {}, 'Bewijs: ', h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, 'bekijk de link'));
+  }
+
   #pickerOptions() {
     return {
       draftKey: `${this.round.tournamentId}:${this.match.no}`,
@@ -66,7 +84,10 @@ export class ResultCard {
   }
 
   #submit(order) {
-    this.run((api) => api.post(`/rounds/me/matches/${this.match.no}/result`, { order }));
+    const key = `${this.round.tournamentId}:${this.match.no}`;
+    const proofUrl = proofDrafts.get(key) ?? this.match.proofUrl ?? '';
+    proofDrafts.delete(key);
+    this.run((api) => api.post(`/rounds/me/matches/${this.match.no}/result`, { order, proofUrl }));
   }
 
   #dispute() {
