@@ -264,9 +264,22 @@ Het is veilig om opnieuw te draaien: wat al bestaat blijft ongemoeid. Een eigen 
 Voor een generale repetitie vul je een **aparte, lege data-map** met dummy-spelers (ingecheckt, met een plaats) en laat je de eerste rondes automatisch spelen. Gebruik nooit de data-map van een echt event.
 
 ```bash
+# macOS, Linux, Git Bash
 DATA_DIR=./demo-data npm run seed:demo -- 60 --played=2     # 60 spelers, ronde 1 en 2 gespeeld, ronde 3 staat klaar
 DATA_DIR=./demo-data ADMIN_PASSWORD=geheim123 npm start
 ```
+
+```powershell
+# Windows PowerShell (variabelen eerst zetten; ze gelden in dit venster tot je ze wist)
+$env:DATA_DIR = "./demo-data"
+npm run seed:demo -- 60 --played=2
+$env:ADMIN_PASSWORD = "geheim123"
+$env:JWT_SECRET = "demo-geheim-demo-geheim-demo-geheim"
+npm start
+Remove-Item Env:DATA_DIR, Env:ADMIN_PASSWORD, Env:JWT_SECRET   # daarna weer opruimen
+```
+
+Draait de Docker-container nog op poort 3000, zet dan eerst `PORT=3001` (PowerShell: `$env:PORT = "3001"`) of stop de container met `docker compose down`.
 
 Opties: een getal = aantal spelers (standaard 60), `--played=N` = aantal gespeelde rondes (0 tot 5; bij 5 deelt de finale in op het klassement), `--preset=<id>`, `--force` = ook op een map met spelers. Open daarna `http://localhost:3000/#/klassement?tv=1` voor de tv-weergave.
 

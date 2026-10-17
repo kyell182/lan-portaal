@@ -11,6 +11,7 @@ const DEFAULT_PRESET = 'ieee-halloween-2026';
  *
  *   DATA_DIR=./demo-data npm run seed:demo -- 60 --played=2
  *   DATA_DIR=./demo-data ADMIN_PASSWORD=geheim123 npm start
+ * In PowerShell: eerst $env:DATA_DIR = "./demo-data", dan het commando (zie README).
  *
  * Opties: een getal = aantal spelers (standaard 60), --played=N = aantal rondes dat al gespeeld is,
  * --preset=<id>, --force = ook uitvoeren als er al spelers zijn.
