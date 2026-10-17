@@ -18,6 +18,8 @@ const createSchema = new Schema({
   location: { type: 'string', maxLength: 80 },
   startTime: { type: 'string', maxLength: 40 },
   settings: { type: 'object', default: {} },
+  roundNo: { type: 'integer', min: 1, max: 20 },
+  countsForOverall: { type: 'boolean', default: false },
 });
 
 const updateSchema = new Schema({
@@ -29,6 +31,8 @@ const updateSchema = new Schema({
   location: { type: 'string', maxLength: 80 },
   startTime: { type: 'string', maxLength: 40 },
   settings: { type: 'object' },
+  roundNo: { type: 'integer', min: 1, max: 20 },
+  countsForOverall: { type: 'boolean', default: false },
 });
 
 /** Toernooien: aanmaken vanuit een template, deelnemers beheren en de lifecycle (draft → running → finished). */

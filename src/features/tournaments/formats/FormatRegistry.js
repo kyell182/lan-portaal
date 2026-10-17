@@ -6,6 +6,7 @@ const GroupStageFormat = require('./league/GroupStageFormat');
 const SwissFormat = require('./league/SwissFormat');
 const PointsFormat = require('./points/PointsFormat');
 const ScoreboardFormat = require('./scoreboard/ScoreboardFormat');
+const LanRoundFormat = require('./lan/LanRoundFormat');
 
 /**
  * Register van alle toernooivormen. Een nieuwe vorm toevoegen =
@@ -27,6 +28,7 @@ class FormatRegistry {
       new SwissFormat(),
       new PointsFormat(),
       new ScoreboardFormat(),
+      new LanRoundFormat(),
     ];
   }
 
