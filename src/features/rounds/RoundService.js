@@ -46,8 +46,17 @@ class RoundService {
     return this.me(playerId);
   }
 
+  /** Zaalronde: "Mijn plaats klopt niet" geeft enkel een melding aan de crew. */
+  reportRoomPlace(playerId, reason) {
+    const { tournament, participant, group } = this.#locate(playerId);
+    if (group) throw HttpError.badRequest('Dit is geen zaalronde');
+    this.tournaments.report(tournament.id, 'roomreport', { by: participant.id, reason });
+    return this.me(playerId);
+  }
+
   #act(playerId, build) {
     const { tournament, participant, group } = this.#locate(playerId);
+    if (!group) throw HttpError.badRequest('Dit is een zaalronde: de crew vult de uitslag in');
     const [matchId, payload] = build(group, participant.id);
     this.tournaments.report(tournament.id, matchId, payload);
     return this.me(playerId);

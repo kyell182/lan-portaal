@@ -1,6 +1,8 @@
 const TournamentFormat = require('../TournamentFormat');
 const HttpError = require('../../../../core/http/HttpError');
 const GroupSizeScale = require('./GroupSizeScale');
+const RankBands = require('./RankBands');
+const RoomRound = require('./RoomRound');
 const LanGroups = require('./LanGroups');
 const LanResults = require('./LanResults');
 const LanStandings = require('./LanStandings');
@@ -10,12 +12,19 @@ const { ResultReview, MATCH_STATUS, CHECK, CREW } = require('./ResultReview');
 const ACTION = Object.freeze({
   GENERATE: 'generate', HOST: 'host', ROOM: 'room', REMOVE: 'remove', TIEBREAK: 'tiebreak',
   SUBMIT: 'submit', CONFIRM: 'confirm', DISPUTE: 'dispute', CLOSE: 'close', REOPEN: 'reopen',
+  ROOM_RESULT: 'roomresult', ROOM_REPORT: 'roomreport', CONVERT: 'convertToGroups',
 });
-const CREW_ONLY = new Set([ACTION.GENERATE, ACTION.HOST, ACTION.REMOVE, ACTION.TIEBREAK, ACTION.CLOSE, ACTION.REOPEN]);
+const MODE = Object.freeze({ GROUPS: 'groups', ROOM: 'room' });
+const CREW_ONLY = new Set([
+  ACTION.GENERATE, ACTION.HOST, ACTION.REMOVE, ACTION.TIEBREAK, ACTION.CLOSE, ACTION.REOPEN, ACTION.ROOM_RESULT, ACTION.CONVERT,
+]);
+
+const ROOM_ONLY = new Set([ACTION.ROOM_RESULT, ACTION.ROOM_REPORT, ACTION.CONVERT]);
 
 /**
- * LAN-ronde met groepen: spelers worden willekeurig (of op stand) in gelijke groepen verdeeld,
+ * LAN-ronde. Modus 'groups': spelers worden willekeurig (of op stand) in gelijke groepen verdeeld,
  * de host van elke groep stuurt de volgorde in en de rest bevestigt (OK) of meldt (Melden).
+Modus 'room': iedereen speelt tegelijk, de crew vult de top in en punten volgen rangbanden.
  * payload.by is 'crew' (standaard) of het deelnemers-id van de speler die handelt; de server zet dat, nooit de browser.
  */
 class LanRoundFormat extends TournamentFormat {
@@ -26,12 +35,13 @@ class LanRoundFormat extends TournamentFormat {
 
   get key() { return 'lan-round'; }
 
-  get label() { return 'LAN-ronde (groepen)'; }
+  get label() { return 'LAN-ronde (groepen of zaal)'; }
 
   get description() { return 'Willekeurige groepen met een host per groep; de groep bevestigt de uitslag. Punten per groepsgrootte.'; }
 
   get settingsFields() {
     return [
+      { key: 'mode', label: 'Soort ronde', type: 'string', values: [MODE.GROUPS, MODE.ROOM], default: MODE.GROUPS },
       { key: 'maxGroupSize', label: 'Max. spelers per groep', type: 'integer', min: 2, max: 200, default: 8 },
       { key: 'groupCount', label: 'Aantal groepen (leeg = automatisch)', type: 'integer', min: 1, max: 1000 },
       { key: 'matchesPerGroup', label: 'Matches per groep', type: 'integer', min: 1, max: 3, default: 1 },
@@ -43,19 +53,21 @@ class LanRoundFormat extends TournamentFormat {
         maxLength: 600,
         default: '8=10,7,5,3,1,1,1,1; 7=10,6,4,2,1,1,1; 6=10,6,3,1,1,1; 5=10,6,3,1,1; 4=10,5,2,1; 3=10,4,1; 2=10,3',
       },
+      { key: 'rankBands', label: 'Rangbanden (zaalronde)', type: 'string', maxLength: 300, default: '1=12; 2=10; 3=9; 4-5=8; 6-10=7; 11-20=5; 21-35=4; 36-50=2; rest=1' },
     ];
   }
 
   normalizeSettings(settings = {}) {
     const clean = super.normalizeSettings(settings);
     GroupSizeScale.validate(clean.pointsBySize);
+    RankBands.validate(clean.rankBands);
     return clean;
   }
 
   /** Maakt een lege state: de crew controleert eerst de aanwezigen en genereert de groepen daarna. */
-  create(participants) {
+  create(participants, settings) {
     this.assertParticipants(participants);
-    return { mode: 'groups', groups: [], closed: false, matches: [] };
+    return { mode: settings.mode, groups: [], room: RoomRound.newRoom(), closed: false, matches: [] };
   }
 
   report(state, matchId, payload = {}, settings, participants) {
@@ -65,9 +77,11 @@ class LanRoundFormat extends TournamentFormat {
     if (CREW_ONLY.has(action) && by !== CREW) throw HttpError.forbidden('Enkel de crew kan dit doen');
     const now = new Date().toISOString();
 
+    if (action === ACTION.REOPEN) return { ...state, closed: false };
+    if (state.mode === MODE.ROOM) return this.#reportRoom(state, action, { payload, by, now }, settings, participants);
     if (action === ACTION.GENERATE) return this.groups.generate(state, participants, settings, payload);
     if (action === ACTION.CLOSE) return this.#close(state, payload);
-    if (action === ACTION.REOPEN) return { ...state, closed: false };
+    if (ROOM_ONLY.has(action)) throw HttpError.conflict('Dit is geen zaalronde');
     const group = LanRoundFormat.#group(state, groupId);
     if (action === ACTION.SUBMIT || action === ACTION.CONFIRM || action === ACTION.DISPUTE) {
       this.#review(action, LanRoundFormat.#match(group, matchNo), group, payload, by, now);
@@ -76,16 +90,33 @@ class LanRoundFormat extends TournamentFormat {
   }
 
   standings(state, participants, settings) {
-    return [LanStandings.build(state, settings)];
+    return [LanStandings.build(state, settings, participants)];
   }
 
   /** Ronde-punten per speler (voor het algemeen klassement). */
-  results(state, settings) {
-    return LanResults.compute(state, settings);
+  results(state, settings, participants = []) {
+    return LanResults.compute(state, settings, participants);
   }
 
   isFinished(state) {
     return state.closed === true;
+  }
+
+  /** Zaalronde: uitslag door de crew, meldingen door spelers, of omzetten naar groepen (plan B). */
+  #reportRoom(state, action, { payload, by, now }, settings, participants) {
+    if (action === ACTION.CONVERT) return this.#convert(state, participants, settings, payload);
+    if (action === ACTION.ROOM_RESULT) return RoomRound.setResult(state, payload.order, participants, now);
+    if (action === ACTION.ROOM_REPORT) return RoomRound.report(state, by, payload.reason, participants, now);
+    if (action === ACTION.CLOSE) return RoomRound.close(state, payload);
+    if (action === ACTION.ROOM) return LanRoundFormat.#roomInfo(state, payload, by);
+    throw HttpError.notFound('Onbekende actie voor een zaalronde');
+  }
+
+  /** Plan B (bv. Tetr.io werkt niet met de hele zaal): zelfde ronde, nu in groepen. Kan enkel zonder zaaluitslag. */
+  #convert(state, participants, settings, payload) {
+    if (state.room.order.length) throw HttpError.conflict('Er is al een zaaluitslag; omzetten kan niet meer');
+    const converted = { ...state, mode: MODE.GROUPS, groups: [] };
+    return this.groups.generate(converted, participants, { ...settings, seeding: 'random' }, payload);
   }
 
   #review(action, match, group, payload, by, now) {
@@ -113,6 +144,11 @@ class LanRoundFormat extends TournamentFormat {
     if (!state.groups.length) throw HttpError.conflict('Genereer eerst de groepen');
     if (open && payload.force !== true) throw HttpError.conflict(`${open} uitslag(en) nog niet bevestigd`);
     return { ...state, closed: true };
+  }
+
+  static #roomInfo(state, payload, by) {
+    if (by !== CREW) throw HttpError.forbidden('Enkel de crew vult de roominfo van de zaal in');
+    return RoomRound.setInfo(state, payload);
   }
 
   static #group(state, groupId) {

@@ -14,6 +14,7 @@ class RoundPresenter {
     const base = { player: RoundPresenter.#nameOf(player) };
     if (!located) return { ...base, round: null };
     const { tournament, participant, group } = located;
+    if (!group) return { ...base, round: this.#roomRound(tournament, participant, player) };
     const members = GroupMembers.active(group).map((pid) => this.#member(pid, tournament, group));
     const iAmHost = group.hostPid === participant.id;
     return { ...base, round: {
@@ -29,8 +30,29 @@ class RoundPresenter {
       seat: this.#seat(player.id),
       group: { id: group.id, name: group.name, members, host: members.find((m) => m.isHost) ?? null, room: group.room },
       matches: group.matches.map((match) => RoundPresenter.#match(match, group, participant.id, iAmHost)),
-      myResult: LanResults.compute(tournament.state, tournament.settings).find((r) => r.pid === participant.id) ?? null,
+      myResult: LanResults.compute(tournament.state, tournament.settings, tournament.participants).find((r) => r.pid === participant.id) ?? null,
     } };
+  }
+
+  /** Zaalronde: geen groep, wel de gedeelde room-info van de crew en mijn plaats. */
+  #roomRound(tournament, participant, player) {
+    const { state } = tournament;
+    return {
+      mode: 'room',
+      tournamentId: tournament.id,
+      name: tournament.name,
+      roundNo: tournament.roundNo ?? null,
+      startTime: tournament.startTime ?? null,
+      closed: !!state.closed,
+      myPid: participant.id,
+      game: this.#game(tournament.gameId),
+      myGameName: tournament.gameId ? player.gameNames?.[tournament.gameId] ?? '' : '',
+      seat: this.#seat(player.id),
+      room: state.room.info,
+      hasResult: state.room.order.length > 0,
+      iReported: state.room.reports.some((r) => r.pid === participant.id),
+      myResult: LanResults.compute(state, tournament.settings, tournament.participants).find((r) => r.pid === participant.id) ?? null,
+    };
   }
 
   #member(pid, tournament, group) {

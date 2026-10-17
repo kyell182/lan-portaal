@@ -1,5 +1,6 @@
 const STATUS_DRAFT = 'draft';
 const FORMAT_KEY = 'lan-round';
+const ROOM_MODE = 'room';
 
 /** Zoekt de lopende LAN-ronde van een speler: het toernooi, zijn deelnemer-id en zijn groep. */
 class RoundLocator {
@@ -21,7 +22,9 @@ class RoundLocator {
 
   static #membership(tournament, playerId) {
     const participant = tournament.participants.find((p) => p.refId === playerId);
-    const group = participant && tournament.state.groups.find((g) => g.pids.includes(participant.id) && !g.removed.includes(participant.id));
+    if (!participant) return null;
+    if (tournament.state.mode === ROOM_MODE) return { tournament, participant, group: null };
+    const group = tournament.state.groups.find((g) => g.pids.includes(participant.id) && !g.removed.includes(participant.id));
     return group ? { tournament, participant, group } : null;
   }
 

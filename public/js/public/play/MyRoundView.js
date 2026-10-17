@@ -13,6 +13,7 @@ export class MyRoundView {
 
   render() {
     if (!this.round) return this.#waiting();
+    if (this.round.mode === 'room') return this.#roomRound();
     return h('div', {},
       this.#head(),
       this.#groupPanel(),
@@ -20,6 +21,32 @@ export class MyRoundView {
       this.round.game?.needsOwnName ? this.#gameName() : null,
       this.round.matches.map((match) => new ResultCard(match, this.round, this.run).render()),
       this.#points());
+  }
+
+  /** Zaalronde: iedereen speelt tegelijk, de crew vult de uitslag in. */
+  #roomRound() {
+    return h('div', {},
+      this.#head(),
+      new RoomPanel(this.round.room, false, this.run, this.round.tournamentId).render(),
+      this.round.game?.needsOwnName ? this.#gameName() : null,
+      this.#roomPlace());
+  }
+
+  #roomPlace() {
+    const { round } = this;
+    if (!round.hasResult) return h('section', { class: 'panel' }, h('h3', {}, 'Uitslag'), h('p', { class: 'muted' }, 'De crew vult de uitslag in na afloop.'));
+    const result = round.myResult;
+    return h('section', { class: 'panel' }, h('h3', {}, 'Mijn plaats'),
+      result ? h('p', {}, `Plaats ${result.place}: `, h('strong', {}, `${result.points} punten`)) : null,
+      round.iReported
+        ? h('p', { class: 'muted' }, 'Je melding is doorgegeven aan de crew.')
+        : h('button', { class: 'btn danger', type: 'button', disabled: round.closed, onclick: () => this.#reportPlace() }, 'Mijn plaats klopt niet'));
+  }
+
+  #reportPlace() {
+    const reason = prompt('Wat klopt er niet? (optioneel)');
+    if (reason === null) return;
+    this.run((api) => api.post('/rounds/me/room/report', { reason }));
   }
 
   #waiting() {
