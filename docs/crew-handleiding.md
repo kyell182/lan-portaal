@@ -5,6 +5,16 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
 
 > Adressen hieronder: `http://<server>:3000` voor spelers en tv's, `http://<server>:3000/admin` voor de crew.
 
+```mermaid
+flowchart LR
+    A["1. Dagen vooraf<br/>inrichten en testen"] --> B["2. Aan de deur<br/>check-in"]
+    B --> C["3 en 4. Rondes<br/>groepen of zaal"]
+    C --> D["Tussenstand<br/>op de tv"]
+    D --> C
+    D --> E["5. Finale op stand"]
+    E --> F["6. Prijzen en opruimen"]
+```
+
 ## 1. Dagen vooraf
 
 | Wat | Hoe |
@@ -27,6 +37,16 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
 3. Verkeerde naam gekozen, ander toestel of kapotte laptop? Druk bij die speler op **Naam vrijgeven**. Het oude toestel verliest de koppeling.
 4. Zet op de tv's `http://<server>:3000/#/klassement?tv=1` schermvullend.
 
+```mermaid
+flowchart TB
+    A["Speler komt binnen"] --> B["Crew: Check-in, zoek de speler,<br/>druk Inchecken"]
+    B --> C["Speler opent #/spelen<br/>en kiest zijn gamertag"]
+    C --> D{"Naam gekozen?"}
+    D -->|"ja"| E["Klaar: de speler ziet<br/>Mijn ronde"]
+    D -->|"verkeerde naam of ander toestel"| F["Crew: Naam vrijgeven"]
+    F --> C
+```
+
 ## 3. Een groepsronde draaien
 
 1. Open het toernooi → tab **Deelnemers** → **Alle … ingecheckte spelers toevoegen** → **Deelnemers opslaan**.
@@ -43,6 +63,31 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
    - bij twee matches een gelijke stand te beslissen.
 8. Zijn alle uitslagen bevestigd: **Ronde sluiten**. Heropenen kan.
 
+```mermaid
+flowchart TB
+    A["Deelnemers toevoegen<br/>Alle ingecheckte spelers"] --> B["Toernooi starten"]
+    B --> C["Groepen en uitslag:<br/>Genereer groepen"]
+    C --> D["Hosts maken hun room<br/>en vullen de roominfo in"]
+    D --> E["De groepen spelen"]
+    E --> F["Hosts sturen de volgorde in<br/>groepsleden drukken OK of Melden"]
+    F --> G{"Alles bevestigd?"}
+    G -->|"ja"| H["Ronde sluiten"]
+    G -->|"betwist"| I["Crew opent de groep<br/>en beslist of corrigeert"]
+    I --> G
+    G -->|"niemand reageert"| J["Automatisch bevestigd<br/>na ongeveer 3 minuten"]
+    J --> G
+```
+
+Wat je op het bord ziet:
+
+```mermaid
+flowchart LR
+    O["Open<br/>wacht op de host"] --> I["Ingestuurd<br/>wacht op OK"]
+    I --> B["Bevestigd<br/>punten definitief"]
+    I --> T["Betwist<br/>crew beslist"]
+    T --> B
+```
+
 ## 4. Een zaalronde draaien
 
 1. Deelnemers toevoegen en starten zoals hierboven. Het tabblad **Groepen en uitslag** toont nu het zaalpaneel.
@@ -50,6 +95,19 @@ met de hele zaal tegelijk. Spelers volgen alles op hun eigen telefoon of laptop,
 3. Na afloop typ je de top in van 1e naar laatste (gamertag typen, Enter). Wie niet vermeld is, krijgt de punten van "rest".
 4. Spelers kunnen **Mijn plaats klopt niet** melden. Pas de uitslag aan en sla hem opnieuw op: dat wist de meldingen. Daarna **Ronde sluiten**.
 5. **Werkt de room niet?** Gebruik *Zaal werkt niet: omzetten naar groepen van 8* (kan zolang er geen zaaluitslag is).
+
+```mermaid
+flowchart TB
+    A["Deelnemers toevoegen en starten"] --> B["Roominfo van de zaal invullen"]
+    B --> C["De zaal speelt"]
+    C --> D["Crew typt de top in<br/>1e tot laatste"]
+    D --> E{"Meldingen van spelers?"}
+    E -->|"ja"| F["Uitslag aanpassen en opnieuw opslaan<br/>(wist de meldingen)"]
+    F --> E
+    E -->|"nee"| G["Ronde sluiten"]
+    B -.->|"room werkt niet"| H["Zaal werkt niet:<br/>omzetten naar groepen van 8"]
+    H --> I["Verder als groepsronde"]
+```
 
 ## 5. De finale op stand
 
@@ -63,6 +121,18 @@ Gebruik het template *Finale op stand*. Bij **Genereer groepen** worden de groep
 | Voorlopig | Een `*` of de melding "groepen nog niet bevestigd" betekent dat er punten uit onbevestigde uitslagen meetellen |
 | Social | Open het social-toernooi: controleer de links en vink het platform af |
 | Na afloop | Check-in → **Alle spelersgegevens wissen** (privacy; doe dit binnen een week) |
+
+```mermaid
+flowchart TB
+    P{"Wat gaat er mis?"}
+    P -->|"pagina laadt niet of niemand kan inloggen"| A["Netwerk controleren<br/>en /api/health openen"]
+    P -->|"naam kiezen geeft een fout"| B["COOKIE_SECURE=false<br/>op gewoon HTTP, dan herstarten"]
+    P -->|"host kan niet insturen"| C["Crew voert de uitslag zelf in<br/>klik de groep open op het bord"]
+    P -->|"spelers drukken niet op OK"| D["Wachten op automatisch bevestigen<br/>of bevestigen als crew"]
+    P -->|"groepsgenoten zitten naast elkaar"| E["Ter plaatse wisselen"]
+    P -->|"tv-modus werkt niet"| F["#/klassement gewoon schermvullend"]
+    P -->|"alles valt uit"| G["Papieren groepenlijst<br/>en spreadsheet als reserve"]
+```
 
 ## 7. Als er iets misgaat
 
