@@ -37,6 +37,23 @@ Alleen admins melden aan; het publiek ziet alles live bijwerken. Handig op een b
 
 ---
 
+## Een LAN-avond in het kort
+
+```mermaid
+flowchart LR
+    A["Voorbereiding<br/>event, games, templates,<br/>spelers importeren"] --> B["Check-in<br/>spelers kiezen hun gamertag"]
+    B --> C["Rondes<br/>groepen of hele zaal"]
+    C --> D["Klassement<br/>op de tv en op telefoons"]
+    D --> C
+    D --> E["Prijsuitreiking"]
+    E --> F["Opruimen<br/>spelersgegevens wissen"]
+```
+
+Elke ronde is één game. Bij een **groepsronde** speelt iedereen in een kleine groep met een host, bij een
+**zaalronde** speelt de hele zaal tegelijk in één room. Het klassement telt alle rondes op.
+
+---
+
 ## Zo ziet het eruit
 
 ### Publieke site
@@ -71,6 +88,20 @@ docker compose up -d --build
 | Data | volume `lan-data` (`/app/data`, JSON-bestanden). Back-up = die map kopiëren |
 
 Het eerste admin-account komt uit `.env`. Je beheert admins daarna onder **Beheer → Admins**.
+
+```mermaid
+flowchart LR
+    subgraph LAN["Lokaal netwerk (geen internet nodig)"]
+        Server["Server<br/>Docker op een LXC of laptop<br/>poort 3000"]
+        Phones["Telefoons en laptops<br/>van de spelers"]
+        TV["Tv's<br/>klassement in tv-modus"]
+        Crew["Crew<br/>beheer op /admin"]
+    end
+    Phones -->|"http, live via SSE"| Server
+    TV -->|"#/klassement?tv=1"| Server
+    Crew -->|"/admin"| Server
+    Server --- Data[("volume lan-data<br/>JSON-bestanden")]
+```
 
 ### Instellingen (`.env`)
 
@@ -212,6 +243,37 @@ flowchart LR
     Totaal --> Klassement["Klassement"]
 ```
 
+### Spelers: import, check-in en aanmelden
+
+```mermaid
+flowchart LR
+    F["Bestand<br/>.xlsx of .csv"] --> K["Kolommen koppelen<br/>automatisch voorgesteld"]
+    K --> C["Controle per rij<br/>dubbele of ongeldige gamertag,<br/>ongeldig e-mailadres"]
+    C --> I["Importeren<br/>in delen van 200"]
+    I --> P[("Spelers van het event<br/>zelfde e-mail = bijwerken")]
+```
+
+Een gamertag is 3 tot 16 tekens (letters, cijfers en `_`) en uniek per event. Spelers hebben **geen wachtwoord**:
+de crew checkt hen in en zij kiezen daarna zelf hun gamertag. Wie eerst kiest, wint.
+
+```mermaid
+sequenceDiagram
+    participant Crew
+    participant Speler as Speler (telefoon)
+    participant Portaal
+    Crew->>Portaal: Speler inchecken
+    Speler->>Portaal: Lijst met vrije namen opvragen
+    Portaal-->>Speler: Enkel ingecheckte namen zonder eigenaar
+    Speler->>Portaal: Gamertag kiezen
+    alt naam is nog vrij
+        Portaal-->>Speler: Cookie voor 8 uur
+    else naam is al gekozen
+        Portaal-->>Speler: 409, kies een andere naam
+    end
+    Crew->>Portaal: Naam vrijgeven (verkeerde keuze of ander toestel)
+    Portaal-->>Speler: Oude cookie is ongeldig
+```
+
 ### LAN-rondes
 
 Voor een avond met meerdere korte rondes waarin iedereen meespeelt. Eén ronde = één toernooi met de vorm
@@ -240,6 +302,56 @@ stateDiagram-v2
     Betwist --> Ingestuurd: Host stuurt opnieuw in
     Betwist --> Bevestigd: Crew beslist
     Bevestigd --> [*]
+```
+
+Zo verloopt een groepsronde, van indeling tot bevestigde uitslag:
+
+```mermaid
+sequenceDiagram
+    participant Crew
+    participant Portaal
+    participant Host
+    participant Groep as Groepsleden
+    Crew->>Portaal: Groepen genereren
+    Portaal-->>Host: Groep, host-kaart en roominfo-formulier
+    Portaal-->>Groep: Groep, host en plaats
+    Host->>Portaal: Roominfo invullen
+    Portaal-->>Groep: Room (code, link of wachtwoord)
+    Note over Host,Groep: de groep speelt de match
+    Host->>Portaal: Volgorde insturen (eventueel met bewijslink)
+    Portaal-->>Groep: Uitslag ter controle
+    alt iedereen drukt OK
+        Groep->>Portaal: OK
+        Portaal-->>Crew: Bevestigd
+    else iemand meldt
+        Groep->>Portaal: Melden met reden
+        Portaal-->>Crew: Betwist, de crew beslist
+    else niemand reageert
+        Portaal-->>Crew: Na autoConfirmSeconds automatisch bevestigd
+    end
+```
+
+Hoe de groepen en punten tot stand komen:
+
+```mermaid
+flowchart TB
+    S["Ingecheckte spelers"] --> M{"Soort ronde"}
+    M -->|"groepen"| G["Gelijke groepen<br/>grootste groepen eerst"]
+    M -->|"zaal"| Z["Eén room voor iedereen"]
+    G --> V{"Indeling"}
+    V -->|"willekeurig"| W["Fisher-Yates<br/>plus anti screen-peek wissels"]
+    V -->|"op stand"| T["Beste spelers samen<br/>in groep 1"]
+    W --> H["Per groep een host<br/>bij voorkeur nog niet eerder host"]
+    T --> H
+    H --> U["Uitslag per match"]
+    U --> R["Som van de plaatsen<br/>bij twee matches"]
+    R --> PG["Punten uit de tabel<br/>voor de groepsgrootte"]
+    Z --> ZU["Crew vult de top in"]
+    ZU --> PZ["Punten per rangband<br/>rest krijgt de laagste band"]
+    PG --> K["Algemeen klassement"]
+    PZ --> K
+    SB["Social bonus<br/>scorebord, max. +8"] --> K
+    K --> TB["Gelijk? Beste enkele ronde,<br/>dan de tie-break van de crew"]
 ```
 
 Alle acties lopen via `POST /api/tournaments/:id/matches/:actie/result`; spelers gebruiken hun eigen routes
@@ -326,14 +438,49 @@ staat in één map. De Container in `src/app/` koppelt de services aan elkaar (d
 
 ```mermaid
 flowchart TB
-    Browser["Browser (public/)"] -->|"REST + SSE"| Router["ApiRouter"]
-    Router --> Controllers["Controllers (per feature)"]
-    Controllers --> Services["Services"]
-    Services --> Formats["Toernooivormen"]
+    subgraph Frontend["Browser (public/, geen buildstap)"]
+        Pub["Publieke app<br/>Mijn ronde, klassement, zitplan"]
+        Adm["Beheer-app<br/>groepenbord, import, check-in"]
+    end
+    Pub -->|"REST + SSE"| Router["ApiRouter"]
+    Adm -->|"REST + SSE"| Router
+    Router --> Controllers["Controllers per feature"]
+    Controllers --> Services["Services<br/>spelers, toernooien, rondes,<br/>klassement, zitplan, site"]
+    Services --> Formats["Toernooivormen<br/>incl. LAN-ronde"]
     Services --> Store[("JSON-opslag")]
     Services --> Bus["EventBus"]
-    Bus --> Browser
-    Bus --> Plugins["Plugins"]
+    Bus -->|"live-meldingen"| Pub
+    Bus --> Adm
+    Bus --> Plugins["Plugins<br/>Discord, webhook"]
+    Timer["AutoConfirmer<br/>timer op de server"] --> Services
+    Presets["Presets en demo-data<br/>optioneel"] --> Services
+```
+
+Het datamodel, vereenvoudigd:
+
+```mermaid
+erDiagram
+    EVENT ||--o{ TOURNAMENT : bevat
+    EVENT ||--o{ SEAT : bevat
+    EVENT ||--o{ PLAYER : bevat
+    EVENT ||--o{ PRIZE : bevat
+    GAME ||--o{ TOURNAMENT : "wordt gespeeld in"
+    TEMPLATE ||--o{ TOURNAMENT : "startpunt van"
+    TOURNAMENT ||--o{ PARTICIPANT : heeft
+    PLAYER ||--o{ PARTICIPANT : "is (refId)"
+    PLAYER |o--o| SEAT : "zit op"
+    TOURNAMENT ||--o{ GROUP : "heeft (LAN-ronde)"
+    GROUP ||--o{ MATCH : speelt
+    MATCH {
+        string status "open, ingestuurd, bevestigd, betwist"
+        list order "volgorde van de spelers"
+        string proofUrl "optionele bewijslink"
+    }
+    PLAYER {
+        string nickname "gamertag, uniek per event"
+        bool checkedIn
+        string claimedAt "naam gekozen op een toestel"
+    }
 ```
 
 ### Backend (`src/`)
