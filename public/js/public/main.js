@@ -16,7 +16,13 @@ import { PlayPage } from './play/PlayPage.js';
 class PublicApp {
   async start() {
     new Brand().start();
-    await eventContext.init();
+    try {
+      await eventContext.init();
+    } catch (err) {
+      // zonder melding blijft de pagina leeg en is de oorzaak (bv. een proxy die /api blokkeert) onzichtbaar
+      document.getElementById('app').textContent = `De events konden niet geladen worden (${err.message}). Controleer of /api bereikbaar is.`;
+      return;
+    }
 
     this.router = new Router(document.getElementById('app'), [
       ['/', HomePage],

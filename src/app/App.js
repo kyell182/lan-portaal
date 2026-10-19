@@ -24,6 +24,7 @@ class App {
     app.use(cookieParser());
     app.use(this.container.authMiddleware.attach);
 
+    app.use('/api', this.#noStore);
     app.use('/api', new ApiRouter(this.container).build());
     app.use('/api', (req, res, next) => next(HttpError.notFound('Onbekende API-route')));
 
@@ -36,6 +37,12 @@ class App {
 
     app.use(errorHandler);
     return app;
+  }
+
+  /** Een proxy of CDN mag nooit een oud API-antwoord (bv. "nog geen event") aan bezoekers zonder cookie geven. */
+  #noStore(req, res, next) {
+    res.set('Cache-Control', 'no-store');
+    next();
   }
 
   /** Het manifest uit public/, met de merknaam van dit portaal. */

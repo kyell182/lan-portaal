@@ -16,7 +16,13 @@ class LiveController {
   }
 
   #stream(req, res) {
-    res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
+    // X-Accel-Buffering: nginx (ook Nginx Proxy Manager) mag de stream niet bufferen, anders komt er nooit iets door.
+    res.set({
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    });
     res.flushHeaders();
     res.write('retry: 3000\n\n');
 
