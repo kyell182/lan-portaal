@@ -8,6 +8,7 @@ import { startThemes } from '../themes/startThemes.js';
 import { adminEventContext } from './context.js';
 import { LoginView } from './LoginView.js';
 import { CrudPage } from './CrudPage.js';
+import { serversResource } from './resources/servers.js';
 import { TemplatesPage } from './TemplatesPage.js';
 import { SeatsAdminPage } from './SeatsAdminPage.js';
 import { AdminsPage } from './AdminsPage.js';
@@ -58,6 +59,7 @@ class AdminApp {
       ['/toernooien/:id', TournamentDetailPage],
       ['/zitplan', SeatsAdminPage],
       ['/prijzen', CrudPage.for(prizesResource)],
+      ['/servers', CrudPage.for(serversResource)],
       ['/templates', TemplatesPage],
       ['/games', CrudPage.for(gamesResource)],
       ['/teams', CrudPage.for(teamsResource)],

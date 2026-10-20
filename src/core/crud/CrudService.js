@@ -60,8 +60,8 @@ class CrudService {
     return { ...input, eventId: this.defaultEventResolver() };
   }
 
-  /** Weergave voor de API: admins zien alles, het publiek de toPublic-versie. */
-  present(item, isAdmin) {
+  /** Weergave voor de API: admins zien alles, het publiek de toPublic-versie. isPlayer: ingelogde speler. */
+  present(item, isAdmin, isPlayer = false) {
     return isAdmin ? item : this.toPublic(item);
   }
 

@@ -15,6 +15,7 @@ const AutoConfirmer = require('../features/tournaments/AutoConfirmer');
 const SiteService = require('../features/site/SiteService');
 const TeamService = require('../features/teams/TeamService');
 const PrizeService = require('../features/prizes/PrizeService');
+const ServerService = require('../features/servers/ServerService');
 const SeatService = require('../features/seats/SeatService');
 const TemplateService = require('../features/templates/TemplateService');
 const FormatRegistry = require('../features/tournaments/formats/FormatRegistry');
@@ -44,6 +45,7 @@ class Container {
     this.authMiddleware = new AuthMiddleware(this.auth, this.playerAuth);
     this.teams = new TeamService(this.store, this.events, this.players.repository);
     this.prizes = new PrizeService(this.store, this.events);
+    this.servers = new ServerService(this.store, this.events);
     this.seats = new SeatService(this.store, this.events, this.players.repository);
     this.templates = new TemplateService(this.store, this.events, this.formats);
     this.tournaments = new TournamentService(this.store, this.events, this.formats, this.templates, this.games.repository);
@@ -65,9 +67,10 @@ class Container {
       toernooien: this.tournaments.repository,
       zitplaatsen: this.seats.repository,
       prijzen: this.prizes.repository,
+      servers: this.servers.repository,
       spelers: this.players.repository,
     });
-    [this.tournaments, this.seats, this.prizes, this.players].forEach((service) => service.useDefaultEvent(currentEvent));
+    [this.tournaments, this.seats, this.prizes, this.servers, this.players].forEach((service) => service.useDefaultEvent(currentEvent));
 
     this.plugins = new PluginService(this.store, new PluginRegistry());
     this.notifications = new NotificationHub(this.events, this.plugins, { publicUrl: config.publicUrl });

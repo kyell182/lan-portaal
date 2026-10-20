@@ -3,11 +3,12 @@ import { api } from '../core/Api.js';
 import { Page } from '../core/Page.js';
 import { Countdown } from '../views/Countdown.js';
 import { TournamentRows } from '../views/TournamentRows.js';
+import { ServerTilesView } from '../views/ServerTilesView.js';
 import { eventContext } from './context.js';
 
 /** Startpagina: het event in de kijker met aftelling, Discord-link en de toernooien. */
 export class HomePage extends Page {
-  get watches() { return ['tournaments', 'games', 'events']; }
+  get watches() { return ['tournaments', 'games', 'events', 'servers']; }
 
   destroy() {
     super.destroy();
@@ -15,22 +16,30 @@ export class HomePage extends Page {
   }
 
   async load() {
-    const [tournaments, games, site] = await Promise.all([api.get(`/tournaments${eventContext.query()}`), api.get('/games'), api.get('/site')]);
-    return { tournaments, games, site, event: eventContext.current };
+    const query = eventContext.query();
+    const [tournaments, games, site, servers] = await Promise.all([api.get(`/tournaments${query}`), api.get('/games'), api.get('/site'), api.get(`/servers${query}`)]);
+    return { tournaments, games, site, servers, event: eventContext.current };
   }
 
-  draw({ tournaments, games, site, event }) {
+  draw({ tournaments, games, site, servers, event }) {
     this.countdown?.destroy();
     const running = tournaments.filter((t) => t.status === 'running').length;
     mount(this.container,
-      event ? this.#hero(event) : this.#noEvent(site),
+      event ? this.#hero(event, servers.length > 0) : this.#noEvent(site),
       h('div', { class: 'section-title' },
         h('h2', {}, 'Toernooien'),
         running ? h('span', { class: 'status running' }, `${running} live`) : null),
-      new TournamentRows(tournaments, games).render('De toernooien worden binnenkort aangekondigd.'));
+      new TournamentRows(tournaments, games).render('De toernooien worden binnenkort aangekondigd.'),
+      servers.length ? this.#servers(servers) : null);
   }
 
-  #hero(event) {
+  #servers(servers) {
+    return h('section', { style: { marginTop: '36px' } },
+      h('div', { class: 'section-title' }, h('h2', {}, 'Servers'), h('a', { href: '#/servers' }, 'Alle servers')),
+      new ServerTilesView(servers).render());
+  }
+
+  #hero(event, hasServers) {
     this.countdown = new Countdown(event.startDate, event.endDate);
     const dates = [formatDate(event.startDate), event.endDate ? `tot ${formatDate(event.endDate)}` : null].filter(Boolean).join(' ');
     return h('section', { class: 'hero' },
@@ -42,7 +51,8 @@ export class HomePage extends Page {
         h('div', { class: 'actions' },
           event.discordUrl ? h('a', { class: 'btn discord', href: event.discordUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Join de Discord') : null,
           h('a', { class: 'btn', href: '#/zitplan' }, 'Zoek je plaats'),
-          h('a', { class: 'btn', href: '#/prijzen' }, 'Bekijk de prijzen'))),
+          h('a', { class: 'btn', href: '#/prijzen' }, 'Bekijk de prijzen'),
+          hasServers ? h('a', { class: 'btn', href: '#/servers' }, 'Servers') : null)),
       h('div', {}, this.countdown.render()));
   }
 

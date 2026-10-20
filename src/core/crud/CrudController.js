@@ -33,7 +33,7 @@ class CrudController {
   }
 
   #viewFor(req, item) {
-    return this.service.present(item, !!req.admin);
+    return this.service.present(item, !!req.admin, !!req.player);
   }
 }
 

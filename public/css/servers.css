@@ -1,0 +1,17 @@
+/* ===== Servers ===== */
+.server-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.server-tile {
+  display: flex; flex-direction: column; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+.server-tile img, .server-tile .ph { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--surface-2); }
+.server-tile img { object-fit: cover; }
+.server-tile .ph { background: repeating-linear-gradient(135deg, var(--surface-2) 0 8px, var(--bg-2) 8px 16px); }
+.server-body { padding: 14px; display: grid; gap: 8px; }
+.server-body h3, .server-body p { margin: 0; }
+.server-address { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.server-address code { color: var(--cyan); overflow-wrap: anywhere; }
+.server-details { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; }
+.server-details dt { color: var(--faint); }
+.server-details dd { margin: 0; }
+.server-details dd.wide { grid-column: 1 / -1; }
